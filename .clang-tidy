@@ -1,0 +1,8 @@
+Checks: '-*,
+        bugprone-*,
+        cert-*,
+        cppcoreguidelines-*,
+        modernize-*,
+        performance-*'
+
+FormatStyle: file
