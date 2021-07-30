@@ -6,3 +6,5 @@ Checks: '-*,
         performance-*'
 
 FormatStyle: file
+
+HeaderFilterRegex: 'source\*'
