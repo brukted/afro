@@ -40,7 +40,7 @@ target_include_directories(
 # Libraries
 #
 
-target_link_libraries(app PRIVATE ${DEFAULT_LIBRARIES})
+target_link_libraries(app PRIVATE ${DEFAULT_LIBRARIES} afro)
 
 #
 # Compile definitions
@@ -64,7 +64,7 @@ target_link_libraries(app PRIVATE ${DEFAULT_LINKER_OPTIONS})
 # Dependencies
 #
 
-# add_dependencies(app )
+add_dependencies(app afro)
 
 #
 # Target Health
