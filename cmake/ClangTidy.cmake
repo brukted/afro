@@ -1,6 +1,6 @@
 # Function to register a target for clang-tidy
 function(perform_clang_tidy check_target target)
-  set(includes "$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>")
+  get_target_property(includes ${target} INCLUDE_DIRECTORIES)
 
   add_custom_target(
     ${check_target}
