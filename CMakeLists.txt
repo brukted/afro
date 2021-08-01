@@ -26,6 +26,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 include(cmake/HealthCheck.cmake)
 include(cmake/CompileOptions.cmake)
+include(cmake/BuildInfo.cmake)
 
 #
 # Project configuration options
