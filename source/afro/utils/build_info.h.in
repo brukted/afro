@@ -1,0 +1,24 @@
+/**
+ * Copyright 2021 The Afro Authors. All rights reserved.
+ * Use of this source code is governed by the GPL-2.0 license that can be
+ * found in the LICENSE file.
+ */
+
+#pragma once
+
+namespace afro::build_info {
+
+constexpr char build_date[] = "@build_date@";
+constexpr char build_time[] = "@build_time@";
+constexpr char build_hash[] = "@build_hash@";
+constexpr char build_branch[] = "@build_branch@";
+constexpr char build_platform[] = "@CMAKE_SYSTEM_NAME@";
+constexpr char build_type[] = "@CMAKE_BUILD_TYPE@";
+constexpr char build_cxxflags[] = "@CMAKE_CXX_FLAGS@";
+constexpr char build_linkflags[] = "@CMAKE_EXE_LINKER_FLAGS@";
+
+constexpr char major_version[] = "@CMAKE_PROJECT_VERSION_MAJOR@";
+constexpr char minor_version[] = "@CMAKE_PROJECT_VERSION_MINOR@";
+constexpr char patch_version[] = "@CMAKE_PROJECT_VERSION_PATCH@";
+
+}  // namespace afro::utils::build
