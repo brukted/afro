@@ -2,6 +2,8 @@
     "name": "afro",
     "version-string": "0.1.0",
     "dependencies": [
-        "gtest"
+        "gtest",
+        "fmt",
+        "spdlog"
     ]
 }

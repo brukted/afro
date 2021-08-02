@@ -2,6 +2,9 @@
 # External dependencies
 #
 
+find_package(spdlog CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
+
 #
 # Sources
 #
@@ -44,7 +47,9 @@ target_include_directories(afro PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 # Libraries
 #
 
-target_link_libraries(afro PRIVATE ${DEFAULT_LIBRARIES})
+target_link_libraries(afro PUBLIC ${DEFAULT_LIBRARIES}
+                                  spdlog::spdlog_header_only
+                                  fmt::fmt-header-only)
 
 #
 # Compile definitions
