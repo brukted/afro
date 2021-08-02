@@ -6,14 +6,16 @@
 # Sources
 #
 
-list(APPEND sources)
-
 #
 # Create library
 #
 
 # Build library
-add_library(afro OBJECT ${sources})
+add_library(afro STATIC)
+
+# Sub directories
+
+add_subdirectory(utils)
 
 #
 # Project options
@@ -72,4 +74,5 @@ target_link_libraries(afro PRIVATE ${DEFAULT_LINKER_OPTIONS})
 # Target Health
 #
 
+get_target_property(sources afro SOURCES)
 perform_health_checks(afro ${sources})
