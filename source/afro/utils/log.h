@@ -12,7 +12,7 @@
 
 namespace afro::log {
 
-enum class Log_level {
+enum class log_level {
   trace = spdlog::level::trace,
   warn = spdlog::level::warn,
   info = spdlog::level::info,
@@ -29,9 +29,9 @@ struct Logger {
 
 auto get_logger() -> Logger&;
 
-auto init_log(Logger&, Log_level) -> void;
+auto init_log(Logger&, log_level) -> void;
 
-auto set_log_level(Log_level) -> void;
+auto set_log_level(log_level) -> void;
 
 template <typename... Args>
 constexpr auto addon_trace(const Args... args) -> void {

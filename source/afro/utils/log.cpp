@@ -24,7 +24,7 @@ auto get_logger() -> Logger& {
   return s_logger;
 }
 
-auto init_log(Logger& logger, Log_level level) -> void {
+auto init_log(Logger& logger, log_level level) -> void {
   spdlog::set_pattern("%^ [%T] %n: %v%$");
   std::vector<spdlog::sink_ptr> sinks{};
 
@@ -42,7 +42,7 @@ auto init_log(Logger& logger, Log_level level) -> void {
   set_log_level(level);
 }
 
-auto set_log_level(Log_level level) -> void {
+auto set_log_level(log_level level) -> void {
   Logger& s_logger = get_logger();
   s_logger.addon_logger->set_level((spdlog::level::level_enum)((int)level));
   s_logger.core_logger->set_level((spdlog::level::level_enum)((int)level));

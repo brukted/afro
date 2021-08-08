@@ -91,10 +91,10 @@ auto exe_path() -> fs::path {
   std::array<char, MAX_PATH> buffer = {""};
 
   // When NULL is passed to GetModuleHandle, the handle of the exe itself is returned
-  HMODULE hModule = GetModuleHandle(nullptr);
-  if (hModule != nullptr) {
+  HMODULE h_module = GetModuleHandle(nullptr);
+  if (h_module != nullptr) {
     // Use GetModuleFileName() with module handle to get the path
-    GetModuleFileName(hModule, buffer.data(), (sizeof(buffer)));
+    GetModuleFileName(h_module, buffer.data(), (sizeof(buffer)));
     return buffer.data();
   }
 
