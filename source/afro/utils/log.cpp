@@ -31,7 +31,7 @@ auto init_log(Logger& logger, log_level level) -> void {
   sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
 
   std::time_t time_now = std::time(nullptr);
-  auto log_file_name = fmt::format("{}{:%Y_%m_%d-%H_%M_%S} log.txt", fmt::localtime(time_now));
+  auto log_file_name = fmt::format("{:%Y_%m_%d-%H_%M_%S} log.txt", fmt::localtime(time_now));
   auto log_file = (paths::log_dir() / log_file_name).u8string();
   sinks.emplace_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>(log_file));
 
