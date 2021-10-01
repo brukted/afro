@@ -34,7 +34,7 @@ set_target_properties(
 
 target_include_directories(
   app PRIVATE ${DEFAULT_INCLUDE_DIRECTORIES} ${CMAKE_CURRENT_BINARY_DIR}
-               ${CMAKE_CURRENT_SOURCE_DIR} ${PROJECT_BINARY_DIR}/source/include)
+              ${CMAKE_CURRENT_SOURCE_DIR})
 
 #
 # Libraries
