@@ -14,6 +14,8 @@ project(
   LANGUAGES CXX
   DESCRIPTION "A procedural material creating software package")
 
+set(CMAKE_CXX_STANDARD 17)
+
 #
 # CMake modules
 #
