@@ -8,17 +8,17 @@
 
 namespace afro::build_info {
 
-constexpr char build_date[] = "@build_date@";
-constexpr char build_time[] = "@build_time@";
-constexpr char build_hash[] = "@build_hash@";
-constexpr char build_branch[] = "@build_branch@";
-constexpr char build_platform[] = "@CMAKE_SYSTEM_NAME@";
-constexpr char build_type[] = "@CMAKE_BUILD_TYPE@";
-constexpr char build_cxxflags[] = "@CMAKE_CXX_FLAGS@";
-constexpr char build_linkflags[] = "@CMAKE_EXE_LINKER_FLAGS@";
+constexpr char BUILD_DATE[] = "@build_date@";
+constexpr char BUILD_TIME[] = "@build_time@";
+constexpr char BUILD_HASH[] = "@build_hash@";
+constexpr char BUILD_BRANCH[] = "@build_branch@";
+constexpr char BUILD_PLATFORM[] = "@CMAKE_SYSTEM_NAME@";
+constexpr char BUILD_TYPE[] = "@CMAKE_BUILD_TYPE@";
+constexpr char BUILD_CXXFLAGS[] = "@CMAKE_CXX_FLAGS@";
+constexpr char BUILD_LINKFLAGS[] = "@CMAKE_EXE_LINKER_FLAGS@";
 
-constexpr char major_version[] = "@CMAKE_PROJECT_VERSION_MAJOR@";
-constexpr char minor_version[] = "@CMAKE_PROJECT_VERSION_MINOR@";
-constexpr char patch_version[] = "@CMAKE_PROJECT_VERSION_PATCH@";
+constexpr char MAJOR_VERSION[] = "@CMAKE_PROJECT_VERSION_MAJOR@";
+constexpr char MINOR_VERSION[] = "@CMAKE_PROJECT_VERSION_MINOR@";
+constexpr char PATCH_VERSION[] = "@CMAKE_PROJECT_VERSION_PATCH@";
 
 }  // namespace afro::utils::build
