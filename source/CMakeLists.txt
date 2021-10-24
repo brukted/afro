@@ -1,3 +1,4 @@
+add_subdirectory(embed-data)
 add_subdirectory(afro)
 add_subdirectory(app)
 
