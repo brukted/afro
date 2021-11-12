@@ -31,7 +31,7 @@ function(embed_data_simple file_from list_to_add)
   set_source_files_properties(${_file_to} PROPERTIES GENERATED TRUE)
 endfunction()
 
-function(embed_data_null_terminated file_from list_to_add)
+function(embed_data_text file_from list_to_add)
 
   # remove ../'s
   get_filename_component(_file_from ${CMAKE_CURRENT_SOURCE_DIR}/${file_from}
