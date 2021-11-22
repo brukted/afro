@@ -1,0 +1,1 @@
+target_sources(afro PUBLIC image.h image.cpp)

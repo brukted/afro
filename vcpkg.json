@@ -1,9 +1,25 @@
 {
-    "name": "afro",
-    "version-string": "0.1.0",
-    "dependencies": [
-        "gtest",
-        "fmt",
-        "spdlog"
-    ]
+  "name": "afro",
+  "version-string": "0.1.0",
+  "dependencies": [
+    "gtest",
+    "fmt",
+    "spdlog",
+    "glfw3",
+    "glbinding",
+    "glm",
+    {
+      "name": "imgui",
+      "default-features": false,
+      "features": ["opengl3-binding", "glfw-binding", "docking-experimental"]
+    },
+    {
+      "name": "openimageio",
+      "features": ["freetype"]
+    },
+    "nativefiledialog",
+    "cereal",
+    "assimp",
+    "imnodes"
+  ]
 }

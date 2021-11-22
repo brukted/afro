@@ -20,31 +20,35 @@
 
 #include "fmt/core.h"
 
+namespace fs = std::filesystem;
+using std::string;
+using std::span;
+
 auto main(int argc, char *argv[]) -> int {
-  auto args = std::span(argv, size_t(argc));
+  auto args = span(argv, size_t(argc));
   if (argc < 2) {
     exit(1);
   }
 
-  std::string_view in_file{args[1]};
-  std::string_view out_file{args[2]};
+  auto in_file(args[1]);
+  auto out_file(args[2]);
 
   uintmax_t size = 0;
 
-  std::ifstream ifs{in_file, std::ios_base::binary | std::ios_base::in};
+  std::ifstream ifs(in_file, std::ios_base::binary | std::ios_base::in);
   if (!ifs.is_open()) {
-    std::cout << fmt::format("Unable to open input {}\n", in_file.data()) << std::endl;
+    std::cout << fmt::format("Unable to open input {}\n", in_file) << std::endl;
   }
-  std::string file_name;
-  std::filesystem::path in_path(in_file);
-  in_path = std::filesystem::absolute(in_path);
-  size = std::filesystem::file_size(in_path);
+  string file_name;
+  fs::path in_path(in_file);
+  in_path = fs::absolute(in_path);
+  size = fs::file_size(in_path);
 
   file_name = in_path.filename().string();
   std::replace(file_name.begin(), file_name.end(), '.', '_');
   std::replace(file_name.begin(), file_name.end(), '-', '_');
 
-  std::ofstream ofs{out_file};
+  std::ofstream ofs(out_file);
   if (!ofs.is_open()) {
     std::cout << fmt::format("Unable to open output {}", in_file) << std::endl;
   }
@@ -68,13 +72,15 @@ auto main(int argc, char *argv[]) -> int {
     size_with_null_term = size + 1;
   }
 
-  ofs << fmt::format("extern const int embed_data_{0}_size;\n"
-                     "extern const char embed_data_{0}[];\n\n",
-                     file_name.c_str());
+  ofs << fmt::format(
+      "extern const int embed_data_{0}_size;\n"
+      "extern const char embed_data_{0}[];\n\n",
+      file_name.c_str());
 
-  ofs << fmt::format("const int embed_data_{0}_size = {1};\n"
-                     "const char embed_data_{0}[]",
-                     file_name.c_str(), (int)size)
+  ofs << fmt::format(
+             "const int embed_data_{0}_size = {1};\n"
+             "const char embed_data_{0}[]",
+             file_name.c_str(), (int)size)
       << " = {\n";
 
   // clang-format off

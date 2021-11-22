@@ -24,6 +24,8 @@
 #include <mach-o/dyld.h>
 #endif  // __APPLE__
 
+#include <fmt/format.h>
+
 #include "paths.h"
 #include "utils/build_info.h"
 
@@ -31,9 +33,21 @@ namespace fs = std::filesystem;
 
 namespace afro::paths {
 
-auto log_dir() -> fs::path { return temp_dir() / "afro" / "log"; }
+auto log_dir() -> fs::path {
+  auto path = (fs::temp_directory_path() / "log");
+  if (!fs::exists(path)) {
+    fs::create_directories(path);
+  }
+  return path;
+}
 
-auto temp_dir() -> fs::path { return (fs::temp_directory_path() / "afro"); }
+auto temp_dir() -> fs::path {
+  auto path = (fs::temp_directory_path() / "afro");
+  if (!fs::exists(path)) {
+    fs::create_directories(path);
+  }
+  return path;
+}
 
 auto data_dir() -> fs::path {
 #if defined(_WIN32)
@@ -45,6 +59,9 @@ auto data_dir() -> fs::path {
 #else
 #error "data_dir() not implemented on this platform"
 #endif
+  if (!fs::exists(path)) {
+    fs::create_directories(path);
+  }
   return path;
 }
 
@@ -58,12 +75,27 @@ auto sys_addons_dir() -> fs::path {
 #else
 #error "sys_addon_dir() not implemented on this platform"
 #endif
+  if (!fs::exists(path)) {
+    fs::create_directories(path);
+  }
   return path;
 }
 
-auto user_addons_dir() -> fs::path { return (user_data_path() / "addons"); }
+auto user_addons_dir() -> fs::path {
+  auto path = (user_data_path() / "addons");
+  if (!fs::exists(path)) {
+    fs::create_directories(path);
+  }
+  return path;
+}
 
-auto config_dir() -> fs::path { return (user_data_path() / "config"); }
+auto config_dir() -> fs::path {
+  auto path = (user_data_path() / "config");
+  if (!fs::exists(path)) {
+    fs::create_directories(path);
+  }
+  return path;
+}
 
 auto user_data_path() -> fs::path {
   fs::path path{""};
@@ -72,7 +104,8 @@ auto user_data_path() -> fs::path {
   auto result = SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_CREATE, nullptr, &buffer);
   if (SUCCEEDED(result)) {
     auto wstr = std::wstring_view(buffer);
-    path = fs::path(wstr.begin(), wstr.end()) / "afro";
+    auto version = fmt::format("{}.{}", build_info::MAJOR_VERSION, build_info::MINOR_VERSION);
+    path = fs::path(wstr.begin(), wstr.end()) / "afro" / version.c_str();
     CoTaskMemFree(buffer);
   }
 #elif defined(__linux__)
@@ -82,7 +115,9 @@ auto user_data_path() -> fs::path {
 #else
 #error "user_data_path() not implemented on this platform"
 #endif
-
+  if (!fs::exists(path)) {
+    fs::create_directories(path);
+  }
   return path;
 }
 

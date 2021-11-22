@@ -19,14 +19,7 @@ add_executable(app ${sources})
 # Project options
 #
 
-set_target_properties(
-  app
-  PROPERTIES DEBUG_POSTFIX "d"
-             CXX_STANDARD 17
-             LINKER_LANGUAGE "CXX"
-             POSITION_INDEPENDENT_CODE ON
-             CXX_VISIBILITY_PRESET "hidden"
-             CXX_EXTENSIONS Off)
+set_target_properties(app PROPERTIES ${DEFAULT_PROJECT_OPTIONS})
 
 #
 # Include directories

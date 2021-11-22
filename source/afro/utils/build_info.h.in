@@ -21,4 +21,4 @@ constexpr char MAJOR_VERSION[] = "@CMAKE_PROJECT_VERSION_MAJOR@";
 constexpr char MINOR_VERSION[] = "@CMAKE_PROJECT_VERSION_MINOR@";
 constexpr char PATCH_VERSION[] = "@CMAKE_PROJECT_VERSION_PATCH@";
 
-}  // namespace afro::utils::build
+}  // namespace afro::build_info

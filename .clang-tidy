@@ -4,7 +4,9 @@ Checks: "-*,
   cppcoreguidelines-*,
   modernize-*,
   performance-*,
-  readability-*"
+  readability-*,
+  -modernize-avoid-c-arrays,
+  -cppcoreguidelines-avoid-c-arrays"
 
 FormatStyle: file
 

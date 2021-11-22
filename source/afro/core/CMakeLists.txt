@@ -1,0 +1,24 @@
+target_sources(
+  afro
+  PUBLIC context.h
+         context.cpp
+         data.h
+         data.cpp
+         function_graph.h
+         function_graph.cpp
+         material_graph.cpp
+         material_graph.h
+         graph_common.h
+         graph_common.cpp
+         image_texture.h
+         image_texture.cpp
+         property.h
+         property.cpp
+         packed_file.h
+         packed_file.cpp
+         uuid.h
+         uuid.cpp
+         folder.h
+         folder.cpp
+         material_nodes.h
+         material_nodes.cpp)

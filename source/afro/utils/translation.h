@@ -6,9 +6,6 @@
 
 #pragma once
 
-//#define _(text) (text)
-#define N_(text) text
-
 namespace afro {
 
 template <typename type>

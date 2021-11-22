@@ -12,7 +12,7 @@
 
 namespace afro::log {
 
-enum class log_level {
+enum class LogLevel {
   trace = spdlog::level::trace,
   warn = spdlog::level::warn,
   info = spdlog::level::info,
@@ -29,59 +29,59 @@ struct Logger {
 
 auto get_logger() -> Logger&;
 
-auto init_log(Logger&, log_level) -> void;
+auto init_log(Logger&, LogLevel) -> void;
 
-auto set_log_level(log_level) -> void;
+auto set_log_level(LogLevel) -> void;
 
 template <typename... Args>
-constexpr auto addon_trace(const Args... args) -> void {
+auto addon_trace(const Args... args) -> void {
   afro::log::get_logger().addon_logger->trace(args...);
 };
 template <typename... Args>
-constexpr auto addon_warn(const Args... args) -> void {
+auto addon_warn(const Args... args) -> void {
   afro::log::get_logger().addon_logger->warn(args...);
 };
 template <typename... Args>
-constexpr auto addon_info(const Args... args) -> void {
+auto addon_info(const Args... args) -> void {
   afro::log::get_logger().addon_logger->info(args...);
 };
 template <typename... Args>
-constexpr auto addon_debug(const Args... args) -> void {
+auto addon_debug(const Args... args) -> void {
   afro::log::get_logger().addon_logger->debug(args...);
 };
 template <typename... Args>
-constexpr auto addon_error(const Args... args) -> void {
+auto addon_error(const Args... args) -> void {
   afro::log::get_logger().addon_logger->error(args...);
 };
 
 template <typename... Args>
-constexpr auto addon_critical(const Args... args) -> void {
+auto addon_critical(const Args... args) -> void {
   afro::log::get_logger().addon_logger->critical(args...);
 };
 
 template <typename... Args>
-constexpr auto core_trace(const Args... args) -> void {
+auto core_trace(const Args... args) -> void {
   afro::log::get_logger().core_logger->trace(args...);
 };
 template <typename... Args>
-constexpr auto core_warn(const Args... args) -> void {
+auto core_warn(const Args... args) -> void {
   afro::log::get_logger().core_logger->warn(args...);
 };
 template <typename... Args>
-constexpr auto core_info(const Args... args) -> void {
+auto core_info(const Args... args) -> void {
   afro::log::get_logger().core_logger->info(args...);
 };
 template <typename... Args>
-constexpr auto core_debug(const Args... args) -> void {
+auto core_debug(const Args... args) -> void {
   afro::log::get_logger().core_logger->debug(args...);
 };
 template <typename... Args>
-constexpr auto core_error(const Args... args) -> void {
+auto core_error(const Args... args) -> void {
   afro::log::get_logger().core_logger->error(args...);
 };
 
 template <typename... Args>
-constexpr auto core_critical(const Args... args) -> void {
+auto core_critical(const Args... args) -> void {
   afro::log::get_logger().core_logger->critical(args...);
 };
 

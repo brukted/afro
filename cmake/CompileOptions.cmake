@@ -71,6 +71,11 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
             /MP           # -> build with multiple processes
             /W4           # -> warning level 4
             # /WX         # -> treat warnings as errors
+            /experimental:external
+            /external:W0
+            /external:I ${VCPKG_INSTALLED_DIR}
+            #/external:anglebrackets
+            /INCREMENTAL # Hot Reload requires it
 
             #$<$<CONFIG:Debug>:
             #/RTCc         # -> value is assigned to a smaller data type and results in a data loss
