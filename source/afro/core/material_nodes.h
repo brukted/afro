@@ -12,6 +12,8 @@
 
 namespace afro::core::material_nodes {
 struct TextNode : public MaterialNode {
+  static const EnumItems TEXT_ALIGN_X_ITEMS;
+  static const EnumItems TEXT_ALIGN_Y_ITEMS;
   TextNode(UUID uuid, MaterialGraph* graph);
   auto execute() -> void override;
 };

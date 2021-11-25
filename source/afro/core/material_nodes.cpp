@@ -13,6 +13,7 @@
 
 #include <memory>
 
+#include "OpenImageIO/span.h"
 #include "core/material_graph.h"
 #include "core/property.h"
 #include "core/uuid.h"
@@ -24,6 +25,19 @@ namespace afro::core::material_nodes {
 
 using std::make_unique;
 using namespace gl;
+
+const EnumItems TextNode::TEXT_ALIGN_X_ITEMS = {
+    {"Left", "", (int)OIIO::ImageBufAlgo::TextAlignX::Left},
+    {"Center", "", (int)OIIO::ImageBufAlgo::TextAlignX::Center},
+    {"Right", "", (int)OIIO::ImageBufAlgo::TextAlignX::Right},
+};
+
+const EnumItems TextNode::TEXT_ALIGN_Y_ITEMS = {
+    {"Baseline", "", (int)OIIO::ImageBufAlgo::TextAlignY::Baseline},
+    {"Top", "", (int)OIIO::ImageBufAlgo::TextAlignY::Top},
+    {"Center", "", (int)OIIO::ImageBufAlgo::TextAlignY::Center},
+    {"Bottom", "", (int)OIIO::ImageBufAlgo::TextAlignY::Bottom},
+};
 
 TextNode::TextNode(UUID uuid, MaterialGraph *graph)
     : MaterialNode(
@@ -39,8 +53,9 @@ TextNode::TextNode(UUID uuid, MaterialGraph *graph)
            {"font_name",
             make_unique<StringProperty>(
                 translate("Font name"), "", [this] { on_prop_change(); }, StringProperty::Type::text, "Arial")},
-           {"font_size", make_unique<IntegerProperty>(
-                             translate("Font Size"), "", [this] { on_prop_change(); }, 10, 0, 60, 0, 1000)},
+           {"font_size", make_unique<FloatProperty>(
+                             translate("Font Size"), translate("Size of the font relative to the width of the image."),
+                             [this] { on_prop_change(); }, FloatProperty::Type::generic)},
            {"background_color",
             make_unique<Float4Property>(
                 translate("Background Color"), "", [this] { on_prop_change(); }, Float4Property::Type::color_rgba)},
@@ -50,55 +65,66 @@ TextNode::TextNode(UUID uuid, MaterialGraph *graph)
            {"text_position", make_unique<Float2Property>(translate("Position"), "", Float2Property::Type::position,
                                                          [this] { on_prop_change(); })},
            {"text_rotation", make_unique<FloatProperty>(
-                                 "", "", [this] { on_prop_change(); }, FloatProperty::Type::angle)}},
+                                 translate("Rotation"), "", [this] { on_prop_change(); }, FloatProperty::Type::angle)},
+           {"text_align_x",
+            make_unique<EnumProperty>(translate("Align X"), "", TEXT_ALIGN_X_ITEMS,
+                                      int(OIIO::ImageBufAlgo::TextAlignX::Left), [this] { on_prop_change(); })},
+           {"text_align_y",
+            make_unique<EnumProperty>(translate("Align Y"), "", TEXT_ALIGN_Y_ITEMS,
+                                      int(OIIO::ImageBufAlgo::TextAlignY::Baseline), [this] { on_prop_change(); })}},
           graph) {}
 
-void TextNode::execute(){
-    AF_ASSERT(is_initialized && outputs[0].cache_tex.has_value())
-    /*
-      const auto [x_pos, y_pos] = props.get_prop<Float2Property>("text_position").value();
-      const auto text_rot = props.get_prop<FloatProperty>("text_rotation").value();
-      const auto font_size = props.get_prop<IntegerProperty>("font_size").value();
-      const auto &font_name = props.get_prop<StringProperty>("font_name").value();
-      const auto color = props.get_prop<Float4Property>("text_col").value();
-      const auto &bg_color = props.get_prop<Float4Property>("background_color").value();
-      const auto &text = props.get_prop<StringProperty>("text").value();
+void TextNode::execute() {
+  AF_ASSERT(is_initialized && outputs[0].cache_tex.has_value())
+  const auto [x_pos, y_pos] = props.get_prop<Float2Property>("text_position").value();
+  const auto text_rot = props.get_prop<FloatProperty>("text_rotation").value();
+  const auto font_size = props.get_prop<FloatProperty>("font_size").value();
+  const auto &font_name = props.get_prop<StringProperty>("font_name").value();
+  const auto color = props.get_prop<Float4Property>("text_col").value();
+  const auto &bg_color = props.get_prop<Float4Property>("background_color").value();
+  const auto &text = props.get_prop<StringProperty>("text").value();
+  const auto &[width, height] = common_props.get_prop<Integer2Property>("output_size").value();
+  const auto pixel_format = common_props.get_prop<EnumProperty>("pixel_format").value();
+  const auto align_x = (OIIO::ImageBufAlgo::TextAlignX)(props.get_prop<EnumProperty>("text_align_x").value());
+  const auto align_y = (OIIO::ImageBufAlgo::TextAlignY)(props.get_prop<EnumProperty>("text_align_y").value());
 
-      const auto &[width, height] = common_props.get_prop<Integer2Property>("output_size").value();
-      const auto pixel_format = common_props.get_prop<EnumProperty>("pixel_format").value();
-      auto type = OIIO::TypeDesc(OIIO::TypeDesc::UINT8);
+  auto type = OIIO::TypeDesc(OIIO::TypeDesc::UINT8);
+  gl::GLenum gl_type = GL_UNSIGNED_BYTE;
 
-      switch ((PixelFormat)pixel_format) {
-        case PixelFormat::eight_bit:
-          type = OIIO::TypeDesc(OIIO::TypeDesc::UINT8);
-          break;
-        case PixelFormat::sixteen_bit:
-          type = OIIO::TypeDesc(OIIO::TypeDesc::UINT16);
-          break;
-        case PixelFormat::sixteen_bit_float:
-          type = OIIO::TypeDesc(OIIO::TypeDesc::HALF);
-          break;
-        case PixelFormat::thirty_two_bit_float:
-          type = OIIO::TypeDesc(OIIO::TypeDesc::FLOAT);
-          break;
-      }
+  switch ((PixelFormat)pixel_format) {
+    case PixelFormat::eight_bit:
+      type = OIIO::TypeDesc(OIIO::TypeDesc::UINT8);
+      break;
+    case PixelFormat::sixteen_bit: {
+      type = OIIO::TypeDesc(OIIO::TypeDesc::UINT16);
+      gl_type = GL_UNSIGNED_SHORT;
+    } break;
+    case PixelFormat::sixteen_bit_float: {
+      type = OIIO::TypeDesc(OIIO::TypeDesc::HALF);
+      gl_type = GL_HALF_FLOAT;
+    } break;
+    case PixelFormat::thirty_two_bit_float: {
+      type = OIIO::TypeDesc(OIIO::TypeDesc::FLOAT);
+      gl_type = GL_FLOAT;
+    } break;
+  }
 
-      OIIO::ImageSpec image_spec{width, height, 4, type};
-      OIIO::ImageBuf buffer{image_spec, OIIO::InitializePixels::No};
+  OIIO::ImageSpec image_spec{width, height, 4, type};
+  OIIO::ImageBuf buffer{image_spec, OIIO::InitializePixels::No};
 
-      if (!OIIO::ImageBufAlgo::fill(buffer, (float *)&bg_color)) {
-        log::core_critical("Can't fill buffer in text node. OIIO error : {}", buffer.geterror());
-      }
+  if (!OIIO::ImageBufAlgo::fill(buffer, (float *)&bg_color)) {
+    log::core_critical("Can't fill buffer in text node. OIIO error : {}", buffer.geterror());
+  }
 
-      if (!OIIO::ImageBufAlgo::render_text(buffer, static_cast<int>(x_pos * width), static_cast<int>(y_pos * height),
-      text, font_size, font_name, (float *)&color)) { log::core_critical("Can't render text in text node. OIIO error :
-      {}", buffer.geterror());
-      }
+  if (!OIIO::ImageBufAlgo::render_text(buffer, static_cast<int>(x_pos * width), static_cast<int>(y_pos * height), text,
+                                       (int)(font_size * width), font_name, OIIO::cspan<float>{(float *)&color, 4},
+                                       align_x, align_y)) {
+    log::core_critical("Can't render text in text node. OIIO error : {}", buffer.geterror());
+  }
+  gl::glBindTexture(gl::GL_TEXTURE_2D, outputs[0].cache_tex.value());
+  void *pixels = buffer.pixeladdr(0, 0);
 
-      gl::GLenum format = get_gl_format(MaterialSocketType::color, (PixelFormat)pixel_format);
-      gl::glBindTexture(gl::GL_TEXTURE_2D, outputs[0].cache_tex.value());
-      void *pixels = buffer.pixeladdr(0, 0);
-      gl::glTexSubImage2D(gl::GL_TEXTURE_2D, 0, 0, 0, width, height, gl::GL_RGBA, format, pixels); */
+  glTexSubImage2D(gl::GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, gl_type, pixels);
 }
 
 UniformColorNode::UniformColorNode(UUID uuid, MaterialGraph *graph)
