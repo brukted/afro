@@ -19,6 +19,7 @@
 #include <utility>
 #include <vector>
 
+#include "utils/asset.h"
 #include "utils/math.h"
 
 namespace afro::core {
@@ -308,6 +309,7 @@ class PropsMap {
   template <typename T>
   auto get_prop(std::string_view id) -> T & {
     auto &ptr = map.at(id);
+    AF_ASSERT((dynamic_cast<T *>(ptr.get())) != nullptr)
     return *(dynamic_cast<T *>(ptr.get()));
   };
 

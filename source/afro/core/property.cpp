@@ -18,6 +18,7 @@
 #include <xutility>
 
 #include "ui/ui_utils.h"
+#include "utils/log.h"
 
 namespace afro::core {
 
@@ -85,6 +86,8 @@ Float2Property::Float2Property(std::string_view name, std::string_view descripti
 
 auto Float2Property::draw() -> void {
   switch (type) {
+    case Type::position:
+      // TODO Implement Float2Property position widget
     case Type::generic: {
       if (ImGui::DragFloat2(name.data(), (float*)&m_value, step, ui_min, ui_max)) {
         m_value.x = std::clamp(m_value.x, min, max);
@@ -94,9 +97,11 @@ auto Float2Property::draw() -> void {
       ui::tooltip(description);
 
     } break;
-    case Type::position:
     case Type::transform_offset:
-      // TODO implement
+      log::core_critical("TODO implement transform offset widget");
+      break;
+    default:
+      log::core_critical("Unknown float2 prop type");
       break;
   }
 }
@@ -301,7 +306,9 @@ auto StringProperty::draw() -> void {
   switch (type) {
     case Type::text: {
       if (ImGui::InputText(name.data(), &m_value, ImGuiInputTextFlags_EnterReturnsTrue)) {
-        m_value.resize(max_len);
+        if (m_value.size() > max_len) {
+          m_value.resize(max_len);
+        }
         callback();
       }
       ui::tooltip(description);
