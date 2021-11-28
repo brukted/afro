@@ -21,4 +21,6 @@ target_sources(
          folder.h
          folder.cpp
          material_nodes.h
-         material_nodes.cpp)
+         material_nodes.cpp
+         curve.h
+         curve.cpp)
