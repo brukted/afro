@@ -14,6 +14,8 @@
 #include <utility>
 
 #include "core/context.h"
+#include "core/curve.h"
+#include "utils/preferences.h"
 
 namespace afro::ui {
 
@@ -43,14 +45,23 @@ auto draw_operator(const std::string_view name, core::Context *ctx, const Icon i
   return false;
 };
 
-auto dark_theme() -> void;
-
 /**
  * @brief Draws a tooltip for the last item drawn.
  *
  * @param text Text to display in the tooltip.
  * @param seconds Delay before the tooltip is displayed. By default, it is taken from preferences.
  */
-auto tooltip(std::string_view text, float seconds = 1.5F) -> void;
+auto tooltip(std::string_view text, float seconds = Preferences::get().theme.user_interface.tooltip.delay) -> void;
+
+/**
+ * @brief Draws a curve editor for the given curve.
+ *
+ * @param curve curve to edit.
+ * @return true if the curve was edited.
+ * @return false if the curve was not edited.
+ */
+auto curve_editor(core::bezier::BezierSpline *lum_curve, core::bezier::BezierSpline *r_curve,
+                  core::bezier::BezierSpline *g_curve, core::bezier::BezierSpline *b_curve,
+                  core::bezier::BezierSpline *a_curve) -> bool;
 
 }  // namespace afro::ui
