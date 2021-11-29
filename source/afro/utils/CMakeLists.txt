@@ -9,6 +9,8 @@ target_sources(
           translation.cpp
           preferences.h
           preferences.cpp
-          embed_data.h)
+          embed_data.h
+          math.h
+          math.cpp)
 
 configure_file(build_info.h.in build_info.h @ONLY)
