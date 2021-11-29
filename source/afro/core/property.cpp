@@ -17,6 +17,7 @@
 #include <utility>
 #include <xutility>
 
+#include "core/curve.h"
 #include "ui/ui_utils.h"
 #include "utils/log.h"
 
@@ -36,11 +37,14 @@ IntegerProperty::IntegerProperty(std::string_view name, std::string_view descrip
       step(step) {}
 
 auto IntegerProperty::draw() -> void {
-  if (ImGui::DragInt(name.data(), &m_value, step, ui_min, ui_max)) {
+  ImGui::PushID(name.data());
+  ImGui::TextUnformatted(name.data());
+  ui::tooltip(description);
+  if (ImGui::DragInt("###drag_int", &m_value, step, ui_min, ui_max)) {
     m_value = std::clamp(m_value, min, max);
     callback();
   }
-  ui::tooltip(description);
+  ImGui::PopID();
 }
 
 auto IntegerProperty::value() const -> int { return m_value; }
@@ -60,11 +64,14 @@ FloatProperty::FloatProperty(std::string_view name, std::string_view description
       step(step) {}
 
 auto FloatProperty::draw() -> void {
-  if (ImGui::DragFloat(name.data(), &m_value, step, ui_min, ui_max)) {
+  ImGui::PushID(name.data());
+  ImGui::TextUnformatted(name.data());
+  ui::tooltip(description);
+  if (ImGui::DragFloat("###drag_float", &m_value, step, ui_min, ui_max)) {
     m_value = std::clamp(m_value, min, max);
     callback();
   }
-  ui::tooltip(description);
+  ImGui::PopID();
 }
 
 auto FloatProperty::value() const -> float { return m_value; }
@@ -89,13 +96,15 @@ auto Float2Property::draw() -> void {
     case Type::position:
       // TODO Implement Float2Property position widget
     case Type::generic: {
-      if (ImGui::DragFloat2(name.data(), (float*)&m_value, step, ui_min, ui_max)) {
+      ImGui::PushID(name.data());
+      ImGui::TextUnformatted(name.data());
+      ui::tooltip(description);
+      if (ImGui::DragFloat2("###drag_float_2", (float*)&m_value, step, ui_min, ui_max)) {
         m_value.x = std::clamp(m_value.x, min, max);
         m_value.y = std::clamp(m_value.y, min, max);
         callback();
       }
-      ui::tooltip(description);
-
+      ImGui::PopID();
     } break;
     case Type::transform_offset:
       log::core_critical("TODO implement transform offset widget");
@@ -126,20 +135,25 @@ Float3Property::Float3Property(std::string_view name, std::string_view descripti
 auto Float3Property::draw() -> void {
   switch (type) {
     case Type::generic: {
-      if (ImGui::DragFloat3(name.data(), (float*)&m_value, step, ui_min, ui_max)) {
+      ImGui::PushID(name.data());
+      ImGui::TextUnformatted(name.data());
+      ui::tooltip(description);
+      if (ImGui::DragFloat3("###drag_float_3", (float*)&m_value, step, ui_min, ui_max)) {
         m_value.x = std::clamp(m_value.x, min, max);
         m_value.y = std::clamp(m_value.y, min, max);
         m_value.z = std::clamp(m_value.z, min, max);
         callback();
       }
-      ui::tooltip(description);
-
+      ImGui::PopID();
     } break;
     case Type::color_rgb: {
-      if (ImGui::ColorEdit3(name.data(), (float*)&m_value)) {
+      ImGui::PushID(name.data());
+      ImGui::TextUnformatted(name.data());
+      ui::tooltip(description);
+      if (ImGui::ColorEdit3("###color_edit3", (float*)&m_value)) {
         callback();
       }
-      ui::tooltip(description);
+      ImGui::PopID();
     } break;
   }
 }
@@ -164,20 +178,26 @@ Float4Property::Float4Property(std::string_view name, std::string_view descripti
 auto Float4Property::draw() -> void {
   switch (type) {
     case Type::generic: {
-      if (ImGui::DragFloat4(name.data(), (float*)&m_value, step, ui_min, ui_max)) {
+      ImGui::PushID(name.data());
+      ImGui::TextUnformatted(name.data());
+      ui::tooltip(description);
+      if (ImGui::DragFloat4("###dragfloat4", (float*)&m_value, step, ui_min, ui_max)) {
         m_value.x = std::clamp(m_value.x, min, max);
         m_value.y = std::clamp(m_value.y, min, max);
         m_value.z = std::clamp(m_value.z, min, max);
         m_value.w = std::clamp(m_value.w, min, max);
         callback();
       }
-      ui::tooltip(description);
+      ImGui::PopID();
     } break;
     case Type::color_rgba: {
-      if (ImGui::ColorEdit4(name.data(), (float*)&m_value)) {
+      ImGui::PushID(name.data());
+      ImGui::TextUnformatted(name.data());
+      ui::tooltip(description);
+      if (ImGui::ColorEdit4("###coloredit4", (float*)&m_value)) {
         callback();
       }
-      ui::tooltip(description);
+      ImGui::PopID();
     } break;
   }
 }
@@ -206,15 +226,21 @@ Integer2Property::Integer2Property(std::string_view name, std::string_view descr
 auto Integer2Property::draw() -> void {
   switch (type) {
     case Type::generic: {
-      if (ImGui::DragInt2(name.data(), (int*)&m_value, step, ui_min, ui_max)) {
+      ImGui::PushID(name.data());
+      ImGui::TextUnformatted(name.data());
+      ui::tooltip(description);
+      if (ImGui::DragInt2("###dergint2", (int*)&m_value, step, ui_min, ui_max)) {
         m_value.x = std::clamp(m_value.x, min, max);
         m_value.y = std::clamp(m_value.y, min, max);
         callback();
       }
-      ui::tooltip(description);
+      ImGui::PopID();
 
     } break;
     case Type::size_pow_2: {
+      ImGui::PushID(name.data());
+      ImGui::TextUnformatted(name.data());
+      ui::tooltip(description);
       ImGui::BeginGroup();
       if (ImGui::DragInt("###x", &pow.x, step, ui_min, ui_max) ||
           ImGui::DragInt("###y", &pow.y, step, ui_min, ui_max)) {
@@ -228,11 +254,11 @@ auto Integer2Property::draw() -> void {
       ImGui::SameLine();
       ImGui::BeginGroup();
       ImGui::BeginDisabled();
-      ImGui::DragInt("###x_prev", &m_value.x, step, ui_min, ui_max);
-      ImGui::DragInt("###y_prev", &m_value.y, step, ui_min, ui_max);
+      ImGui::Text("%d", m_value.x);
+      ImGui::Text("%d", m_value.y);
       ImGui::EndDisabled();
       ImGui::EndGroup();
-      ui::tooltip(description);
+      ImGui::PopID();
     } break;
   }
 }
@@ -253,13 +279,16 @@ Integer3Property::Integer3Property(std::string_view name, std::string_view descr
       step(step) {}
 
 auto Integer3Property::draw() -> void {
-  if (ImGui::DragInt3(name.data(), (int*)&m_value, step, ui_min, ui_max)) {
+  ImGui::PushID(name.data());
+  ImGui::TextUnformatted(name.data());
+  ui::tooltip(description);
+  if (ImGui::DragInt3("###drag3int", (int*)&m_value, step, ui_min, ui_max)) {
     m_value.x = std::clamp(m_value.x, min, max);
     m_value.y = std::clamp(m_value.y, min, max);
     m_value.z = std::clamp(m_value.z, min, max);
     callback();
   }
-  ui::tooltip(description);
+  ImGui::PopID();
 }
 
 auto Integer3Property::value() const -> IVec3 { return m_value; }
@@ -278,14 +307,17 @@ Integer4Property::Integer4Property(std::string_view name, std::string_view descr
       step(step) {}
 
 auto Integer4Property::draw() -> void {
-  if (ImGui::DragInt4(name.data(), (int*)&m_value, step, ui_min, ui_max)) {
+  ImGui::PushID(name.data());
+  ImGui::TextUnformatted(name.data());
+  ui::tooltip(description);
+  if (ImGui::DragInt4("###drag4_slider", (int*)&m_value, step, ui_min, ui_max)) {
     m_value.x = std::clamp(m_value.x, min, max);
     m_value.y = std::clamp(m_value.y, min, max);
     m_value.z = std::clamp(m_value.z, min, max);
     m_value.w = std::clamp(m_value.w, min, max);
     callback();
   }
-  ui::tooltip(description);
+  ImGui::PopID();
 }
 
 auto Integer4Property::value() const -> IVec4 { return m_value; }
@@ -303,20 +335,23 @@ StringProperty::StringProperty(std::string_view name, std::string_view descripti
 auto StringProperty::value() const -> const std::string& { return m_value; }
 
 auto StringProperty::draw() -> void {
+  ImGui::PushID(name.data());
   switch (type) {
     case Type::text: {
-      if (ImGui::InputText(name.data(), &m_value, ImGuiInputTextFlags_EnterReturnsTrue)) {
+      ImGui::TextUnformatted(name.data());
+      ui::tooltip(description);
+      if (ImGui::InputText("###input_text_widget", &m_value, ImGuiInputTextFlags_EnterReturnsTrue)) {
         if (m_value.size() > max_len) {
           m_value.resize(max_len);
         }
         callback();
       }
-      ui::tooltip(description);
     } break;
     case Type::path:
       // TODO implement
       break;
   }
+  ImGui::PopID();
 }
 
 BoolProperty::BoolProperty(std::string_view name, std::string_view description, PropertyCallback callback,
@@ -328,10 +363,13 @@ BoolProperty::BoolProperty(std::string_view name, std::string_view description, 
       default_value(default_value) {}
 
 auto BoolProperty::draw() -> void {
-  if (ImGui::Checkbox(name.data(), &m_value)) {
+  ImGui::PushID(name.data());
+  ImGui::TextUnformatted(name.data());
+  ui::tooltip(description);
+  if (ImGui::Checkbox("###checkbox", &m_value)) {
     callback();
   }
-  ui::tooltip(description);
+  ImGui::PopID();
 }
 
 auto BoolProperty::value() const -> bool { return m_value; }
@@ -348,24 +386,57 @@ EnumProperty::EnumProperty(std::string_view name, std::string_view description, 
 }
 
 auto EnumProperty::draw() -> void {
+  ImGui::PushID(name.data());
   const auto& [c_name, c_des, c_num] = m_value;
-  if (ImGui::BeginCombo(name.data(), c_name.data())) {
+  ImGui::TextUnformatted(name.data());
+  ui::tooltip(description);
+  if (ImGui::BeginCombo("###selectables", c_name.data())) {
     for (auto const& item : items) {
       const auto& [i_name, des, num] = item;
       if (ImGui::Selectable(i_name.data(), num == c_num)) {
         m_value = item;
         callback();
       }
-      ui::tooltip(des, 2.0F);
+      ui::tooltip(des);
     }
     ImGui::EndCombo();
-    ui::tooltip(description);
   }
+  ImGui::PopID();
 }
 
 auto EnumProperty::value() const -> int {
   const auto [n, d, num] = m_value;
   return num;
+}
+
+CurveProperty::CurveProperty(std::string_view name, std::string_view description, PropertyCallback callback)
+    : name(name), callback(std::move(callback)), description(description) {}
+
+auto CurveProperty::draw() -> void {
+  ImGui::TextUnformatted(name.data());
+  ui::tooltip(description);
+  if (ui::curve_editor(&lum_curve, &r_curve, &g_curve, &b_curve, &a_curve)) {
+    callback();
+  }
+}
+
+auto CurveProperty::value(Channel channel) const -> bezier::BezierSpline {
+  switch (channel) {
+    case Channel::lum:
+      return lum_curve;
+    case Channel::r:
+      return r_curve;
+    case Channel::g:
+      return g_curve;
+    case Channel::b:
+      return b_curve;
+    case Channel::a:
+      return a_curve;
+    default: {
+      log::core_warn("Unkown curve channel {}", static_cast<int>(channel));
+      return lum_curve;
+    }
+  }
 }
 
 PropsMap::PropsMap(std::initializer_list<value_type> props) {
@@ -378,6 +449,7 @@ PropsMap::PropsMap(std::initializer_list<value_type> props) {
 auto PropsMap::draw() -> void {
   for (auto& [id, prop] : map) {
     prop->draw();
+    ImGui::Separator();
   }
 }
 

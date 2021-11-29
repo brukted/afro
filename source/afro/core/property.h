@@ -10,17 +10,19 @@
 #include <functional>
 #include <initializer_list>
 #include <limits>
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
 #include <string_view>
 #include <tuple>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
+#include "core/curve.h"
 #include "utils/asset.h"
 #include "utils/math.h"
+
 
 namespace afro::core {
 
@@ -298,8 +300,33 @@ class EnumProperty : public Property {
   ~EnumProperty() override = default;
 };
 
+class CurveProperty : public Property {
+  std::string_view name;
+  PropertyCallback callback;
+  std::string_view description;
+  bezier::BezierSpline lum_curve;
+  bezier::BezierSpline r_curve;
+  bezier::BezierSpline g_curve;
+  bezier::BezierSpline b_curve;
+  bezier::BezierSpline a_curve;
+
+ public:
+  enum class Channel : char { lum, r, g, b, a };
+  CurveProperty(std::string_view name, std::string_view description, PropertyCallback callback);
+  auto draw() -> void override;
+  auto draw_edit() -> void override{};
+  /**
+   * @brief Returns the curve for the given channel
+   *
+   * @param channel One of the channels defined in the enum
+   * @return bezier::BezierSpline
+   */
+  [[nodiscard]] auto value(Channel channel = Channel::lum) const -> bezier::BezierSpline;
+  ~CurveProperty() override = default;
+};
+
 class PropsMap {
-  std::unordered_map<std::string_view, std::unique_ptr<Property>> map;
+  std::map<std::string_view, std::unique_ptr<Property>> map;
   using value_type = std::pair<const std::basic_string_view<char>, std::unique_ptr<afro::core::Property>>;
 
  public:
