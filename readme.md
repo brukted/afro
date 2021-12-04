@@ -16,11 +16,7 @@
   <a href="#license">License</a>
 </p>
 
-![screenshot](https://github.com/brukted/afro/blob/main/docs/screencast.mp4?raw=true)
-
-<video >
-  <source src="https://github.com/brukted/afro/blob/main/docs/screencast.mp4?raw=true" type="video/mp4">
-</video>
+![screenshot](https://github.com/brukted/afro/blob/main/docs/screencast.gif?raw=true)
 
 ## TODOs
 
