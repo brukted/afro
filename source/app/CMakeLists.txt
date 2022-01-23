@@ -51,7 +51,7 @@ target_compile_options(app PRIVATE ${DEFAULT_COMPILE_OPTIONS})
 # Linker options
 #
 
-target_link_libraries(app PRIVATE ${DEFAULT_LINKER_OPTIONS})
+target_link_options(app PRIVATE ${DEFAULT_LINKER_OPTIONS})
 
 #
 # Dependencies

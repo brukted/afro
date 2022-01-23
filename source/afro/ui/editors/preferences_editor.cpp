@@ -74,12 +74,12 @@ auto PreferencesEditor::draw_theme() -> void {
   if (ImGui::BeginCombo("###themes_combo", nullptr, ImGuiComboFlags_NoPreview)) {
     ImGui::EndCombo();
   }
-  ImGuiStyle *ref = &Preferences::get().theme;
+  ImGuiStyle *ref = &Preferences::get().theme.imgui_style;
 
   // You can pass in a reference ImGuiStyle structure to compare to, revert to
   // and save to (else it compares to an internally stored reference)
   ImGuiStyle &style = ImGui::GetStyle();
-  ImGuiStyle &ref_saved_style = Preferences::get().theme;
+  ImGuiStyle &ref_saved_style = Preferences::get().theme.imgui_style;
 
   // Default to using internal storage as reference
   static bool init = true;
@@ -112,14 +112,15 @@ auto PreferencesEditor::draw_theme() -> void {
     ImGui::SliderFloat("PopupBorderSize", &style.PopupBorderSize, 0.0F, 1.0F, "%.0f");
     ImGui::SliderFloat("FrameBorderSize", &style.FrameBorderSize, 0.0F, 1.0F, "%.0f");
     ImGui::SliderFloat("TabBorderSize", &style.TabBorderSize, 0.0F, 1.0F, "%.0f");
-    ImGui::TextUnformatted(translate("Rounding", "prefernces_editor"));
-    ImGui::SliderFloat("WindowRounding", &style.WindowRounding, 0.0F, 12.0F, "%.0f");
-    ImGui::SliderFloat("ChildRounding", &style.ChildRounding, 0.0F, 12.0F, "%.0f");
-    ImGui::SliderFloat("FrameRounding", &style.FrameRounding, 0.0F, 12.0F, "%.0f");
-    ImGui::SliderFloat("PopupRounding", &style.PopupRounding, 0.0F, 12.0F, "%.0f");
-    ImGui::SliderFloat("ScrollbarRounding", &style.ScrollbarRounding, 0.0F, 12.0F, "%.0f");
-    ImGui::SliderFloat("GrabRounding", &style.GrabRounding, 0.0F, 12.0F, "%.0f");
-    ImGui::SliderFloat("TabRounding", &style.TabRounding, 0.0F, 12.0F, "%.0f");
+    ImGui::TextUnformatted(translate("Rounding", "preferences_editor"));
+    const auto rounding_ui_max = 12.0F;
+    ImGui::SliderFloat("WindowRounding", &style.WindowRounding, 0.0F, rounding_ui_max, "%.0f");
+    ImGui::SliderFloat("ChildRounding", &style.ChildRounding, 0.0F, rounding_ui_max, "%.0f");
+    ImGui::SliderFloat("FrameRounding", &style.FrameRounding, 0.0F, rounding_ui_max, "%.0f");
+    ImGui::SliderFloat("PopupRounding", &style.PopupRounding, 0.0F, rounding_ui_max, "%.0f");
+    ImGui::SliderFloat("ScrollbarRounding", &style.ScrollbarRounding, 0.0F, rounding_ui_max, "%.0f");
+    ImGui::SliderFloat("GrabRounding", &style.GrabRounding, 0.0F, rounding_ui_max, "%.0f");
+    ImGui::SliderFloat("TabRounding", &style.TabRounding, 0.0F, rounding_ui_max, "%.0f");
     ImGui::TextUnformatted(translate("Alignment", "preferences_editor"));
     ImGui::SliderFloat2("WindowTitleAlign", (float *)&style.WindowTitleAlign, 0.0F, 1.0F, "%.2f");
     int window_menu_button_position = style.WindowMenuButtonPosition + 1;

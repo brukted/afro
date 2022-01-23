@@ -6,17 +6,32 @@
 
 #pragma once
 
+#include <optional>
+#include <variant>
+
 #include "core/image_texture.h"
 #include "glbinding/gl/types.h"
+
 namespace afro::core {
 struct Context;
 }
 
 namespace afro::ui {
 
-struct TextureViewer {
-  gl::GLuint texture;
-  core::ImageTexture *img_texture;
+class TextureViewer {
+ public:
+  using Viewable = std::variant<core::ImageTexture*, gl::GLuint>;
+
+ private:
+  gl::GLuint texture = 0;
+  std::optional<Viewable> viewable;
+
+ public:
+  TextureViewer() = default;
+  auto draw(bool* p_open) -> void;
+  auto set_texture(Viewable viewable) -> void;
+  auto reset() -> Viewable;
+  [[nodiscard]] auto has_texture() const -> bool;
 };
 
 }  // namespace afro::ui

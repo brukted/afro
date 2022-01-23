@@ -9,6 +9,7 @@
 #include <imgui.h>
 
 #include "core/context.h"
+#include "core/curve.h"
 #include "debug_ui.h"
 #include "icons.h"
 #include "ui/editors/material_editor.h"
@@ -17,8 +18,7 @@
 
 namespace afro::ui {
 Window::Window(GLFWwindow *window, core::Context *context)
-    : glfw_window(window), context(context), outliner(Outliner(context)),
-      material_editor(MaterialEditor(context)) {}
+    : glfw_window(window), context(context), outliner(Outliner(context)), material_editor(MaterialEditor(context)) {}
 
 auto Window::draw() -> void {
   main_menu_bar();
@@ -34,6 +34,9 @@ auto Window::draw() -> void {
   }
   if (show_parameter_editor) {
     parameter_editor.draw(&show_parameter_editor);
+  }
+  if (show_texture_viewer) {
+    texture_viewer.draw(&show_texture_viewer);
   }
   // Debuging Tools
 #ifndef NDEBUG
@@ -54,19 +57,17 @@ auto Window::draw() -> void {
     ImGui::ShowStyleEditor();
     ImGui::End();
   }
-#endif // !NDEBUG
+#endif  // !NDEBUG
 }
 
 auto Window::main_menu_bar() -> void {
   if (ImGui::BeginMainMenuBar()) {
     if (ImGui::BeginMenu(translate("Editors"))) {
       ImGui::MenuItem(translate("Outliner"), nullptr, &show_outliner);
-      ImGui::MenuItem(translate("Material Editor"), nullptr,
-                      &show_material_editor);
-      ImGui::MenuItem(translate("Preferences Editor"), nullptr,
-                      &show_preferences_editor);
-      ImGui::MenuItem(translate("Parameter Editor"), nullptr,
-                      &show_parameter_editor);
+      ImGui::MenuItem(translate("Material Editor"), nullptr, &show_material_editor);
+      ImGui::MenuItem(translate("Preferences Editor"), nullptr, &show_preferences_editor);
+      ImGui::MenuItem(translate("Parameter Editor"), nullptr, &show_parameter_editor);
+      ImGui::MenuItem(translate("Texture Viewer"), nullptr, &show_texture_viewer);
       ImGui::EndMenu();
     }
 
@@ -80,7 +81,7 @@ auto Window::main_menu_bar() -> void {
       ImGui::MenuItem("About Dear ImGui", nullptr, &show_about);
       ImGui::EndMenu();
     }
-#endif // !NDEBUG
+#endif  // !NDEBUG
     ImGui::EndMainMenuBar();
   }
 }
@@ -90,4 +91,4 @@ auto Window::show_exit_dialog() -> bool {
   return true;
 }
 
-} // namespace afro::ui
+}  // namespace afro::ui

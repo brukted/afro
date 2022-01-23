@@ -63,9 +63,9 @@ auto ParameterEditor::open(core::MaterialGraph* graph) -> void {
   mat_graph = graph;
 }
 
-auto ParameterEditor::open(core::Folder* folder) -> void {
+auto ParameterEditor::open(core::Folder* folder_o) -> void {
   unbind();
-  this->folder = folder;
+  folder = folder_o;
 }
 
 auto ParameterEditor::open(core::ImageTexture* image) -> void {
@@ -73,10 +73,10 @@ auto ParameterEditor::open(core::ImageTexture* image) -> void {
   img_texture = image;
 }
 auto ParameterEditor::draw_material_node() -> void {
-  if (CollapsingHeader(translate("Common Properties"))) {
+  if (CollapsingHeader(translate("Common Properties"), ImGuiTreeNodeFlags_DefaultOpen)) {
     mat_node->common_props.draw();
   }
-  if (ImGui::CollapsingHeader(translate("Specfic Properties"))) {
+  if (ImGui::CollapsingHeader(translate("Specfic Properties"), ImGuiTreeNodeFlags_DefaultOpen)) {
     mat_node->props.draw();
   }
 }

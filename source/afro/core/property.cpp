@@ -37,7 +37,7 @@ IntegerProperty::IntegerProperty(std::string_view name, std::string_view descrip
       step(step) {}
 
 auto IntegerProperty::draw() -> void {
-  ImGui::PushID(name.data());
+  ImGui::PushID((void*)this);
   ImGui::TextUnformatted(name.data());
   ui::tooltip(description);
   if (ImGui::DragInt("###drag_int", &m_value, step, ui_min, ui_max)) {
@@ -64,7 +64,7 @@ FloatProperty::FloatProperty(std::string_view name, std::string_view description
       step(step) {}
 
 auto FloatProperty::draw() -> void {
-  ImGui::PushID(name.data());
+  ImGui::PushID((void*)this);
   ImGui::TextUnformatted(name.data());
   ui::tooltip(description);
   if (ImGui::DragFloat("###drag_float", &m_value, step, ui_min, ui_max)) {
@@ -96,7 +96,7 @@ auto Float2Property::draw() -> void {
     case Type::position:
       // TODO Implement Float2Property position widget
     case Type::generic: {
-      ImGui::PushID(name.data());
+      ImGui::PushID((void*)this);
       ImGui::TextUnformatted(name.data());
       ui::tooltip(description);
       if (ImGui::DragFloat2("###drag_float_2", (float*)&m_value, step, ui_min, ui_max)) {
@@ -135,7 +135,7 @@ Float3Property::Float3Property(std::string_view name, std::string_view descripti
 auto Float3Property::draw() -> void {
   switch (type) {
     case Type::generic: {
-      ImGui::PushID(name.data());
+      ImGui::PushID((void*)this);
       ImGui::TextUnformatted(name.data());
       ui::tooltip(description);
       if (ImGui::DragFloat3("###drag_float_3", (float*)&m_value, step, ui_min, ui_max)) {
@@ -147,7 +147,7 @@ auto Float3Property::draw() -> void {
       ImGui::PopID();
     } break;
     case Type::color_rgb: {
-      ImGui::PushID(name.data());
+      ImGui::PushID((void*)this);
       ImGui::TextUnformatted(name.data());
       ui::tooltip(description);
       if (ImGui::ColorEdit3("###color_edit3", (float*)&m_value)) {
@@ -178,7 +178,7 @@ Float4Property::Float4Property(std::string_view name, std::string_view descripti
 auto Float4Property::draw() -> void {
   switch (type) {
     case Type::generic: {
-      ImGui::PushID(name.data());
+      ImGui::PushID((void*)this);
       ImGui::TextUnformatted(name.data());
       ui::tooltip(description);
       if (ImGui::DragFloat4("###dragfloat4", (float*)&m_value, step, ui_min, ui_max)) {
@@ -191,7 +191,7 @@ auto Float4Property::draw() -> void {
       ImGui::PopID();
     } break;
     case Type::color_rgba: {
-      ImGui::PushID(name.data());
+      ImGui::PushID((void*)this);
       ImGui::TextUnformatted(name.data());
       ui::tooltip(description);
       if (ImGui::ColorEdit4("###coloredit4", (float*)&m_value)) {
@@ -226,7 +226,7 @@ Integer2Property::Integer2Property(std::string_view name, std::string_view descr
 auto Integer2Property::draw() -> void {
   switch (type) {
     case Type::generic: {
-      ImGui::PushID(name.data());
+      ImGui::PushID((void*)this);
       ImGui::TextUnformatted(name.data());
       ui::tooltip(description);
       if (ImGui::DragInt2("###dergint2", (int*)&m_value, step, ui_min, ui_max)) {
@@ -238,7 +238,7 @@ auto Integer2Property::draw() -> void {
 
     } break;
     case Type::size_pow_2: {
-      ImGui::PushID(name.data());
+      ImGui::PushID((void*)this);
       ImGui::TextUnformatted(name.data());
       ui::tooltip(description);
       ImGui::BeginGroup();
@@ -279,7 +279,7 @@ Integer3Property::Integer3Property(std::string_view name, std::string_view descr
       step(step) {}
 
 auto Integer3Property::draw() -> void {
-  ImGui::PushID(name.data());
+  ImGui::PushID((void*)this);
   ImGui::TextUnformatted(name.data());
   ui::tooltip(description);
   if (ImGui::DragInt3("###drag3int", (int*)&m_value, step, ui_min, ui_max)) {
@@ -307,7 +307,7 @@ Integer4Property::Integer4Property(std::string_view name, std::string_view descr
       step(step) {}
 
 auto Integer4Property::draw() -> void {
-  ImGui::PushID(name.data());
+  ImGui::PushID((void*)this);
   ImGui::TextUnformatted(name.data());
   ui::tooltip(description);
   if (ImGui::DragInt4("###drag4_slider", (int*)&m_value, step, ui_min, ui_max)) {
@@ -335,7 +335,7 @@ StringProperty::StringProperty(std::string_view name, std::string_view descripti
 auto StringProperty::value() const -> const std::string& { return m_value; }
 
 auto StringProperty::draw() -> void {
-  ImGui::PushID(name.data());
+  ImGui::PushID((void*)this);
   switch (type) {
     case Type::text: {
       ImGui::TextUnformatted(name.data());
@@ -363,7 +363,7 @@ BoolProperty::BoolProperty(std::string_view name, std::string_view description, 
       default_value(default_value) {}
 
 auto BoolProperty::draw() -> void {
-  ImGui::PushID(name.data());
+  ImGui::PushID((void*)this);
   ImGui::TextUnformatted(name.data());
   ui::tooltip(description);
   if (ImGui::Checkbox("###checkbox", &m_value)) {
@@ -386,7 +386,7 @@ EnumProperty::EnumProperty(std::string_view name, std::string_view description, 
 }
 
 auto EnumProperty::draw() -> void {
-  ImGui::PushID(name.data());
+  ImGui::PushID((void*)this);
   const auto& [c_name, c_des, c_num] = m_value;
   ImGui::TextUnformatted(name.data());
   ui::tooltip(description);

@@ -39,7 +39,12 @@ struct ControlPoint {
  */
 struct BezierSpline {
   static constexpr float DEFAULT_ELISION = 1e-5F;
-  std::vector<ControlPoint> points = {{{0, 0}, {0, 0}, {0, 0}}, {{1, 1}, {1, 1}, {1, 1}}};
+  std::vector<ControlPoint> points = {{{0 - DEFAULT_ELISION, 0 - DEFAULT_ELISION},
+                                       {0 - DEFAULT_ELISION, 0 - DEFAULT_ELISION},
+                                       {0 - DEFAULT_ELISION, 0 - DEFAULT_ELISION}},
+                                      {{1 + DEFAULT_ELISION, 1 + DEFAULT_ELISION},
+                                       {1 + DEFAULT_ELISION, 1 + DEFAULT_ELISION},
+                                       {1 + DEFAULT_ELISION, 1 + DEFAULT_ELISION}}};
   /**
    * @brief Computes the y value of the curve at the given x value.
    *

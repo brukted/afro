@@ -10,6 +10,7 @@
 #include "ui/editors/outliner.h"
 #include "ui/editors/parameters_editor.h"
 #include "ui/editors/preferences_editor.h"
+#include "ui/editors/texture_viewer.h"
 
 struct GLFWwindow;
 namespace afro::core {
@@ -25,10 +26,12 @@ struct Window {
   MaterialEditor material_editor;
   PreferencesEditor preferences_editor;
   ParameterEditor parameter_editor;
+  TextureViewer texture_viewer;
   bool show_material_editor = true;
   bool show_outliner = true;
   bool show_preferences_editor = false;
   bool show_parameter_editor = true;
+  bool show_texture_viewer = false;
 #ifndef NDEBUG
   bool show_undo_debug = false;
   bool show_metrics = false;

@@ -13,6 +13,7 @@
 #include "core/graph_common.h"
 #include "core/material_graph.h"
 #include "core/uuid.h"
+#include "utils/asset.h"
 
 namespace afro::core {
 struct MaterialGraph;
@@ -41,9 +42,15 @@ struct MaterialEditor {
     std::unordered_map<int, core::UUID> map2;
 
    public:
-    inline auto get_uuid(int i) { return map2.at(i); };
-    inline auto get_int(core::UUID i) { return map1.at(i); };
-    inline auto create_or_get_int(core::UUID uuid) {
+    inline auto get_uuid(int i) -> core::UUID {
+      AF_ASSERT(map2.contains(i))
+      return map2.at(i);
+    };
+    inline auto get_int(core::UUID i) -> int {
+      AF_ASSERT(map1.contains(i))
+      return map1.at(i);
+    };
+    inline auto create_or_get_int(core::UUID uuid) -> int {
       if (map1.contains(uuid)) {
         return map1.at(uuid);
       }
@@ -51,7 +58,7 @@ struct MaterialEditor {
       map1[uuid] = last_i;
       map2[last_i] = uuid;
       return last_i;
-    }
+    };
     inline auto reset() -> void {
       map1.clear();
       map2.clear();
@@ -76,6 +83,7 @@ struct MaterialEditor {
 
  private:
   auto draw_node(core::MaterialNode *node) -> void;
+  auto draw_node_context_menu() -> void;
   auto draw_comment_node(core::CommentNode &node) -> void;
   auto main_context_menu() -> void;
   auto check_for_new_links() -> void;

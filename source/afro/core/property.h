@@ -23,7 +23,6 @@
 #include "utils/asset.h"
 #include "utils/math.h"
 
-
 namespace afro::core {
 
 // TODO Support exposing and grouping

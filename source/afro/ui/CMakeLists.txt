@@ -12,4 +12,6 @@ target_sources(
          debug_ui.h
          debug_ui.cpp
          ui_utils.h
-         ui_utils.cpp)
+         ui_utils.cpp
+         theme.h
+         theme.cpp)

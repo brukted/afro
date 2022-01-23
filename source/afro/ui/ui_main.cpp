@@ -149,7 +149,7 @@ auto UiContext::init() -> void {
 
   log::core_trace("Loading style from preference file");
   auto &style = ImGui::GetStyle();
-  style = Preferences::get().theme;
+  style = Preferences::get().theme.imgui_style;
 
   // Initialize ImGui
   log::core_trace("Initializing ImGui");

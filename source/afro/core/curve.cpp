@@ -34,9 +34,11 @@ auto BezierSpline::lut(int samples, bool clamp) -> std::vector<float> {
   auto lut = std::vector<float>();
   lut.reserve(samples);
   const auto step = 1.0F / (float)samples;
+  auto x = 0.0F;
   sort();
-  for (auto i = 0.0F; i < 1.0F && lut.size() < samples; i += step) {
-    lut.push_back(at(i, clamp));
+  for (auto sample = 0; x <= 1.0F && sample < samples; ++sample) {
+    x = step * static_cast<float>(sample);
+    lut.push_back(at(x, clamp));
   }
   return lut;
 }

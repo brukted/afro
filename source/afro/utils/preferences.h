@@ -6,21 +6,20 @@
 
 #pragma once
 
-#include <imgui.h>
-
 #include <any>
 #include <string>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
 
+#include "ui/theme.h"
 #include "utils/log.h"
 
 namespace afro {
 struct Preferences {
   std::string file_path;
   std::unordered_map<std::string, std::any> p_map;
-  ImGuiStyle theme;
+  ui::Theme theme;
   auto load_from_file(std::string pref_path) -> void;
   auto save_to_file() -> void;
 

@@ -6,7 +6,8 @@ Checks: "-*,
   performance-*,
   readability-*,
   -modernize-avoid-c-arrays,
-  -cppcoreguidelines-avoid-c-arrays"
+  -cppcoreguidelines-avoid-c-arrays,
+  -bugprone-easily-swappable-parameters"
 
 FormatStyle: file
 

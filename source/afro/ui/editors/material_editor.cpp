@@ -37,8 +37,8 @@ auto MaterialEditor::draw(bool *p_open) -> void {
   imnodes::EditorContextSet(imnodes_context);
   imnodes::BeginNodeEditor();
   /// Draws nodes
-  for (auto &node : graph->nodes) {
-    draw_node(node.second.get());
+  for (auto &[uuid, node] : graph->nodes) {
+    draw_node(node.get());
   }
   // Draws links
   for (const auto &[uuid, link] : graph->links) {
@@ -49,7 +49,9 @@ auto MaterialEditor::draw(bool *p_open) -> void {
     draw_comment_node(*comment_node.get());
   }
   imnodes::EndNodeEditor();
-  // Draw main context menu
+  // Draws the node context menu
+  draw_node_context_menu();
+  // Draws main context menu
   main_context_menu();
   check_for_new_links();
   check_for_deleted_links();
@@ -88,6 +90,8 @@ auto MaterialEditor::draw_node(core::MaterialNode *node) -> void {
       case MaterialSocketType::grayscale:
         style.colors[imnodes::ColorStyle_Pin] = IM_COL32(128, 128, 128, 255);
         break;
+      case MaterialSocketType::universal:
+        AF_ASSERT_MSG(false, "Output socket can't be of type universal")
     }
     imnodes::BeginOutputAttribute(attr_id_map.create_or_get_int(out.uid));
     ImGui::TextUnformatted(out.ui_name.data());
@@ -114,6 +118,22 @@ auto MaterialEditor::draw_comment_node(core::CommentNode &node) -> void {
   imnodes::BeginNode(node_id_map.create_or_get_int(node.uuid));
   ImGui::InputText("###comment", &node.comment);
   imnodes::EndNode();
+}
+
+auto MaterialEditor::draw_node_context_menu() -> void {
+  static int hovered_node_id = 0;
+  if (ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows) && ImGui::IsMouseDown(ImGuiMouseButton_Right) &&
+      imnodes::IsNodeHovered(&hovered_node_id)) {
+    ImGui::OpenPopup("node_context_menu");
+  }
+  if (ImGui::BeginPopup("node_context_menu")) {
+    const auto node_uuid = node_id_map.get_uuid(hovered_node_id);
+    const auto &node = graph->get_node(node_uuid);
+    if (ImGui::MenuItem(translate("Open Output"))) {
+      af_context->ui_context.main_window.texture_viewer.set_texture(node.outputs[0].cache_tex.value());
+    }
+    ImGui::EndPopup();
+  }
 }
 
 auto MaterialEditor::open_graph(core::MaterialGraph *new_graph) -> void {
@@ -161,6 +181,7 @@ auto MaterialEditor::main_context_menu() -> void {
       prop_add_node_op<material_nodes::BlendNode>(translate("Blend"), Icon::BLEND_NODE);
       prop_add_node_op<material_nodes::BlurNode>(translate("Blur"), Icon::BLUR_NODE);
       prop_add_node_op<material_nodes::ChannelSelectNode>(translate("Channel Select"), Icon::CHANNELS_SHUFFLE_NODE);
+      prop_add_node_op<material_nodes::CurveNode>(translate("Curve"), Icon::CURVE_NODE);
       prop_add_node_op<material_nodes::TextNode>(translate("Text"), Icon::TEXT_NODE);
       prop_add_node_op<material_nodes::UniformColorNode>(translate("Uniform Color"), Icon::UNIFORM_COLOR_NODE);
       ImGui::EndMenu();

@@ -62,6 +62,7 @@ struct MaterialProcessor {
   auto set_prop(const std::string_view uniform_name, const EnumProperty &prop) const -> void;
   auto set_prop(const std::string_view uniform_name, const FloatProperty &prop) const -> void;
   auto set_prop(const std::string_view uniform_name, const Float2Property &prop) const -> void;
+  auto set_prop(const std::string_view uniform_name, const BoolProperty &prop) const -> void;
   auto set_uniform(const std::string_view uniform_name, const int val) const -> void;
   auto set_texture(const std::string_view sampler_name, const gl::GLuint texture_unit) const -> void;
 };
@@ -77,6 +78,7 @@ struct MaterialInSocket {
   MaterialInSocket(UUID uid, std::string_view ui_name, MaterialSocketType type);
 
   auto get_texture(MaterialGraph *graph) const -> gl::GLuint;
+  [[nodiscard]] auto is_linked() const -> bool { return link_uuid.has_value(); };
 
   constexpr auto operator==(UUID other_uid) const -> bool { return other_uid == uid; }
 };
@@ -107,6 +109,7 @@ struct MaterialExecutionContext {
   MaterialProcessor blend_processor;
   MaterialProcessor blur_processor;
   MaterialProcessor channel_select_processor;
+  MaterialProcessor curve_processor;
   MaterialExecutionContext() = default;
   auto setup_proccesors() -> void;
 };

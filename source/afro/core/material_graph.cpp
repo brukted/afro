@@ -121,6 +121,10 @@ auto MaterialProcessor::set_prop(const std::string_view uniform_name, const Floa
   glUniform2f(location, x, y);
 };
 
+auto MaterialProcessor::set_prop(const std::string_view uniform_name, const BoolProperty &prop) const -> void {
+  set_uniform(uniform_name, (int)prop.value());
+}
+
 auto MaterialProcessor::deinit() -> void {
   gl::glDeleteProgram(program_id);
   glDeleteVertexArrays(1, &vao);
@@ -148,6 +152,10 @@ auto MaterialExecutionContext::setup_proccesors() -> void {
   {
     EMBEDDED_DATA(channel_select_frag)
     channel_select_processor.init(embed_data_mat_vertex_vert, embed_data_channel_select_frag);
+  }
+  {
+    EMBEDDED_DATA(curve_frag)
+    curve_processor.init(embed_data_mat_vertex_vert, embed_data_curve_frag);
   }
 }
 
@@ -401,7 +409,7 @@ auto MaterialNode::create_output_buffers() -> void {
     GLuint texture = 0;
     GLuint framebuffer = 0;
     const auto pixel_format = common_props.get_prop<EnumProperty>("pixel_format").value();
-    const GLenum format = get_gl_format(output.type, (PixelFormat)(pixel_format));
+    const GLenum internal_format = get_gl_format(output.type, (PixelFormat)(pixel_format));
 
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -411,8 +419,8 @@ auto MaterialNode::create_output_buffers() -> void {
     glTexParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MAG_FILTER, gl::GL_NEAREST);
 
     const auto [width, height] = common_props.get_prop<Integer2Property>("output_size").value();
-    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    // TODO Swizzel G & B to R for grayscale
+    glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    // TODO Swizzle G & B to R for grayscale
 
     glGenFramebuffers(1, &framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);

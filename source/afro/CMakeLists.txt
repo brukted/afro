@@ -24,6 +24,7 @@ embed_data_text("../../resources/shaders/material/uniform_color.frag" rc)
 embed_data_text("../../resources/shaders/material/blend.frag" rc)
 embed_data_text("../../resources/shaders/material/blur.frag" rc)
 embed_data_text("../../resources/shaders/material/channel_select.frag" rc)
+embed_data_text("../../resources/shaders/material/curve.frag" rc)
 
 #
 # Sources
@@ -95,7 +96,7 @@ target_compile_options(afro PRIVATE ${DEFAULT_COMPILE_OPTIONS})
 # Linker options
 #
 
-target_link_libraries(afro PRIVATE ${DEFAULT_LINKER_OPTIONS})
+target_link_options(afro PRIVATE ${DEFAULT_LINKER_OPTIONS})
 
 #
 # Dependencies

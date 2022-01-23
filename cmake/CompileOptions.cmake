@@ -77,6 +77,7 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
       /external:I
       ${VCPKG_INSTALLED_DIR}
       # /external:anglebrackets $<$<CONFIG:Debug>: /RTCc         # -> value is
+      $<$<CONFIG:Debug>:/ZI>
       # assigned to a smaller data type and results in a data loss >
       $<$<CONFIG:Release>:
       /Gw # -> whole program global optimization
@@ -153,10 +154,6 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_SYSTEM_NAME}" MATCHES
   endif()
 endif()
 
-if(MSVC
-   AND WIN32
-   AND NOT MSVC_VERSION VERSION_LESS 142)
-
-  set(DEFAULT_LINKER_OPTIONS PUBLIC ${DEFAULT_LINKER_OPTIONS})
-
+if (MSVC AND WIN32 AND NOT MSVC_VERSION VERSION_LESS 142)
+    set(DEFAULT_LINKER_OPTIONS PRIVATE ${DEFAULT_LINKER_OPTIONS} $<$<CONFIG:Debug>:/INCREMENTAL>)
 endif()

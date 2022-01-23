@@ -11,12 +11,16 @@
 #include <OpenImageIO/imageio.h>
 #include <glbinding/gl43core/gl.h>
 
+#include <limits>
 #include <memory>
+#include <vector>
 
 #include "OpenImageIO/span.h"
 #include "core/material_graph.h"
 #include "core/property.h"
 #include "core/uuid.h"
+#include "glbinding/gl/enum.h"
+#include "glbinding/gl/functions-patches.h"
 #include "utils/asset.h"
 #include "utils/log.h"
 #include "utils/translation.h"
@@ -64,8 +68,6 @@ TextNode::TextNode(UUID uuid, MaterialGraph *graph)
                 translate("Text Color"), "", [this] { on_prop_change(); }, Float4Property::Type::color_rgba)},
            {"text_position", make_unique<Float2Property>(translate("Position"), "", Float2Property::Type::position,
                                                          [this] { on_prop_change(); })},
-           {"text_rotation", make_unique<FloatProperty>(
-                                 translate("Rotation"), "", [this] { on_prop_change(); }, FloatProperty::Type::angle)},
            {"text_align_x",
             make_unique<EnumProperty>(translate("Align X"), "", TEXT_ALIGN_X_ITEMS,
                                       int(OIIO::ImageBufAlgo::TextAlignX::Left), [this] { on_prop_change(); })},
@@ -77,7 +79,6 @@ TextNode::TextNode(UUID uuid, MaterialGraph *graph)
 void TextNode::execute() {
   AF_ASSERT(is_initialized && outputs[0].cache_tex.has_value())
   const auto [x_pos, y_pos] = props.get_prop<Float2Property>("text_position").value();
-  const auto text_rot = props.get_prop<FloatProperty>("text_rotation").value();
   const auto font_size = props.get_prop<FloatProperty>("font_size").value();
   const auto &font_name = props.get_prop<StringProperty>("font_name").value();
   const auto color = props.get_prop<Float4Property>("text_col").value();
@@ -117,8 +118,8 @@ void TextNode::execute() {
   }
 
   if (!OIIO::ImageBufAlgo::render_text(buffer, static_cast<int>(x_pos * width), static_cast<int>(y_pos * height), text,
-                                       (int)(font_size * width), font_name, OIIO::cspan<float>{(float *)&color, 4},
-                                       align_x, align_y)) {
+                                       static_cast<int>(font_size * width), font_name,
+                                       OIIO::cspan<float>{(float *)&color, 4}, align_x, align_y)) {
     log::core_critical("Can't render text in text node. OIIO error : {}", buffer.geterror());
   }
   gl::glBindTexture(gl::GL_TEXTURE_2D, outputs[0].cache_tex.value());
@@ -346,6 +347,98 @@ auto ChannelSelectNode::execute() -> void {
   proc.set_texture("input2", 1);
   const auto [width, height] = common_props.get_prop<Integer2Property>("output_size").value();
   proc.execute(outputs[0].cache_frame_buf.value(), outputs[0].cache_tex.value(), width, height);
+}
+
+CurveNode::CurveNode(UUID uuid, MaterialGraph *graph)
+    : MaterialNode(
+          uuid, translate("Curve"),
+          // Inputs
+          {MaterialInSocket(generate_uuid(), translate("Input"), MaterialSocketType::universal)},
+          // Outputs
+          {MaterialOutSocket(generate_uuid(), translate("Output"), MaterialSocketType::color)},
+          // Props
+          {{"apply_curve", make_unique<BoolProperty>(
+                               translate("Apply Curve"),
+                               translate("Apply the curve to the input if turned on; otherwise, show the curve"),
+                               [this] { execute(); }, false)},
+           {"curve_addressing", make_unique<EnumProperty>(
+                                    translate("Curve Addressing"),
+                                    translate("Specifies how values out of the 0.0 to 1.0 range are handled"),
+                                    EnumItems{{translate("Clamp"), translate("Clamp"), (int)CurveAddressing::clamp},
+                                              {translate("Repeat"), translate("Repeat"), (int)CurveAddressing::repeat}},
+                                    (int)CurveAddressing::clamp, [this] { execute(); })},
+           {"curve", make_unique<CurveProperty>(translate("Curve"), translate("Curve to use"), [this] { execute(); })}},
+          graph) {}
+
+auto CurveNode::execute() -> void {
+  AF_ASSERT(is_initialized)
+  AF_ASSERT(exe_ctx.has_value())
+  constexpr auto lut_size = 1024;
+  const auto apply_curve = props.get_prop<BoolProperty>("apply_curve");
+  auto &input_socket = inputs[0];
+  // Early return on no input
+  if (apply_curve.value() && !input_socket.is_linked()) {
+    return;
+  }
+  auto &proc = exe_ctx.value()->curve_processor;
+  const auto &curve = props.get_prop<CurveProperty>("curve");
+  const auto lum_lut = curve.value(CurveProperty::Channel::lum).lut(lut_size);
+  const auto red_lut = curve.value(CurveProperty::Channel::r).lut(lut_size);
+  const auto green_lut = curve.value(CurveProperty::Channel::g).lut(lut_size);
+  const auto blue_lut = curve.value(CurveProperty::Channel::b).lut(lut_size);
+  const auto alpha_lut = curve.value(CurveProperty::Channel::a).lut(lut_size);
+  auto main_lut = std::vector<float>(static_cast<size_t>(lut_size) * 4);
+
+  for (auto i = 0, x = 0; i < (lut_size * 4); i += 4, ++x) {
+    main_lut[i] = red_lut[x];
+    main_lut[i + 1] = green_lut[x];
+    main_lut[i + 2] = blue_lut[x];
+    main_lut[i + 3] = alpha_lut[x];
+  }
+  GLuint lut_tex = 0;
+  glGenTextures(1, &lut_tex);
+  glBindTexture(GL_TEXTURE_1D, lut_tex);
+  GLenum texture_wrap = GL_CLAMP_TO_EDGE;
+  const auto addressing = (CurveAddressing)props.get_prop<EnumProperty>("curve_addressing").value();
+  if (addressing == CurveAddressing::clamp) {
+    texture_wrap = GL_CLAMP_TO_EDGE;
+  } else {
+    texture_wrap = GL_REPEAT;
+  }
+  glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, texture_wrap);
+  glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, texture_wrap);
+  glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexImage1D(GL_TEXTURE_1D, 0, GL_R32F, lut_size, 0, GL_RED, GL_FLOAT, lum_lut.data());
+
+  GLuint main_lut_tex = 0;
+  glGenTextures(1, &main_lut_tex);
+  glBindTexture(GL_TEXTURE_1D, main_lut_tex);
+  glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, texture_wrap);
+  glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, texture_wrap);
+  glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA32F, lut_size, 0, GL_RGBA, GL_FLOAT, main_lut.data());
+  proc.set_prop("apply_curve", apply_curve);
+  glActiveTexture(GL_TEXTURE0);
+  if (input_socket.link_uuid.has_value()) {
+    glBindTexture(GL_TEXTURE_2D, input_socket.get_texture(graph));
+
+  } else {
+    glBindTexture(GL_TEXTURE_2D, 0);
+  }
+  proc.set_texture("input_tex", 0);
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_1D, lut_tex);
+  proc.set_texture("lum_curve_lut", 1);
+  glActiveTexture(GL_TEXTURE2);
+  glBindTexture(GL_TEXTURE_1D, main_lut_tex);
+  proc.set_texture("main_curve_lut", 2);
+
+  const auto [width, height] = common_props.get_prop<Integer2Property>("output_size").value();
+  proc.execute(outputs[0].cache_frame_buf.value(), outputs[0].cache_tex.value(), width, height);
+  glDeleteTextures(1, &lut_tex);
+  glDeleteTextures(1, &main_lut_tex);
 }
 
 }  // namespace afro::core::material_nodes
