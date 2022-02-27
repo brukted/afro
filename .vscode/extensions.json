@@ -2,7 +2,6 @@
     "recommendations": [
         "jeff-hykin.better-cpp-syntax",
         "aaron-bond.better-comments",
-        "coenraads.bracket-pair-colorizer",
         "ms-vscode.cpptools",
         "xaver.clang-format",
         "twxs.cmake",
