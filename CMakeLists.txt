@@ -8,7 +8,8 @@ enable_testing()
 # Declare project
 #
 
-set(CMAKE_TOOLCHAIN_FILE "/Users/bruktedla/Documents/afro/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        CACHE STRING "Vcpkg toolchain file")
 
 project(
   afro

@@ -189,7 +189,7 @@ auto UiContext::main_loop() -> void {
     }
     draw();
   }
-  log::core_trace("Destorying UI context");
+  log::core_trace("Destroying UI context");
   deinit();
 }
 

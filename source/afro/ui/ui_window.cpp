@@ -35,7 +35,7 @@ auto Window::draw() -> void {
   if (show_parameter_editor) {
     parameter_editor.draw(&show_parameter_editor);
   }
-  // Debuging Tools
+  // Debugging Tools
 #ifndef NDEBUG
   if (show_undo_debug) {
     debug_undo(context);
@@ -70,7 +70,7 @@ auto Window::main_menu_bar() -> void {
       ImGui::EndMenu();
     }
 
-    // Debuging Tools
+    // Debugging Tools
 #ifndef NDEBUG
     if (ImGui::BeginMenu(translate("Debug"))) {
       ImGui::MenuItem("Undo", nullptr, &show_undo_debug);
