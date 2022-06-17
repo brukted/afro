@@ -9,7 +9,7 @@ find_package(glm CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(imnodes CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
-find_package(OpenImageIO REQUIRED)
+find_package(OpenImageIO CONFIG REQUIRED)
 find_package(unofficial-nativefiledialog CONFIG REQUIRED)
 find_package(cereal CONFIG REQUIRED)
 
@@ -73,11 +73,12 @@ target_link_libraries(
          glbinding::glbinding
          glfw
          imgui::imgui
-         imnodes::imnodes
+         unofficial::imnodes::imnodes
          OpenImageIO::OpenImageIO
+         OpenImageIO::OpenImageIO_Util
          unofficial::nativefiledialog::nfd
          glm::glm
-         cereal)
+         cereal::cereal)
 
 #
 # Compile definitions

@@ -5,24 +5,21 @@ cmake_minimum_required(VERSION 3.21)
 enable_testing()
 
 #
-# Configure vcpkg
-#
-
-if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-  set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-      CACHE STRING "")
-endif()
-
-
-#
 # Declare project
 #
+
+set(CMAKE_TOOLCHAIN_FILE "/Users/bruktedla/Documents/afro/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
 
 project(
   afro
   VERSION 0.1.0
   LANGUAGES CXX
   DESCRIPTION "A procedural material creating software package")
+
+
+#
+# Configure vcpkg
+#
 
 set(CMAKE_CXX_STANDARD 20)
 

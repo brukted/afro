@@ -12,7 +12,7 @@
 
 #include "icons_font_awesome_5.h"
 #include "imgui.h"
-
+#include "utils/log.h"
 namespace afro::ui {
 
 const std::unordered_map<Icon, std::string> ICON_MAP = {{Icon::NONE, ""},
@@ -22,18 +22,19 @@ const std::unordered_map<Icon, std::string> ICON_MAP = {{Icon::NONE, ""},
                                                         {Icon::IMAGE_TEXTURE, ICON_FA_IMAGE},
                                                         {Icon::TEXT_NODE, ICON_FA_FONT}};
 
-auto icon_code_point(Icon icon) noexcept -> const char * {
+auto icon_code_point(Icon icon) noexcept -> const char* {
   try {
     return ICON_MAP.at(icon).c_str();
 
-  } catch (const std::out_of_range &) {
+  } catch (const std::out_of_range&) {
+    log::core_warn("icon code point missing for icon : {}", static_cast<int>(icon));
     return ICON_MAP.at(Icon::MISSING).c_str();
   }
 }
 
 auto icon_code_points() noexcept -> std::vector<ImWchar> {
   ImFontGlyphRangesBuilder glyph_builder;
-  for (const auto [icon, codepoint] : ICON_MAP) {
+  for (const auto& [icon, codepoint] : ICON_MAP) {
     glyph_builder.AddText(codepoint.c_str());
   }
   ImVector<ImWchar> ranges;

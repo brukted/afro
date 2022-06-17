@@ -15,7 +15,6 @@
 #include <string_view>
 #include <unordered_map>
 #include <utility>
-#include <xutility>
 
 #include "core/curve.h"
 #include "ui/ui_utils.h"
@@ -377,7 +376,7 @@ auto BoolProperty::value() const -> bool { return m_value; }
 EnumProperty::EnumProperty(std::string_view name, std::string_view description, EnumItems items, int default_value,
                            PropertyCallback callback)
     : name(name), callback(std::move(callback)), description(description), items(std::move(items)) {
-  const auto default_item = std::ranges::find_if(this->items, [default_value](const auto& item) {
+  const auto default_item = std::find_if(this->items.begin(),this->items.end(), [default_value](const auto& item) {
     const auto& [name, des, num] = item;
     return num == default_value;
   });

@@ -27,7 +27,7 @@ auto BezierSpline::at(float x, bool clamp) -> float {
 }
 
 auto BezierSpline::sort() -> void {
-  std::ranges::sort(points, [](auto &a, auto &b) { return a.pos.x < b.pos.x; });
+  std::sort(points.begin(), points.end(), [](auto &a, auto &b) { return a.pos.x < b.pos.x; });
 }
 
 auto BezierSpline::lut(int samples, bool clamp) -> std::vector<float> {

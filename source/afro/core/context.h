@@ -29,7 +29,7 @@ struct Context {
   template <typename T, typename... Args>
   auto queue_operation(Args... args) -> void {
     operator_queue.push(std::make_unique<T>(args...));
-  };
+  }
 };
 
 }  // namespace afro::core

@@ -186,13 +186,10 @@ const EnumItems BlendNode::ALPHA_MODES = {{"Background", "", AlphaMode::backgrou
 
 BlendNode::BlendNode(UUID uuid, MaterialGraph *graph)
     : MaterialNode(uuid, translate("Blend"),
-                   // Inputs
                    {MaterialInSocket(generate_uuid(), translate("Background"), MaterialSocketType::universal),
                     MaterialInSocket(generate_uuid(), translate("Foreground"), MaterialSocketType::universal),
                     MaterialInSocket(generate_uuid(), translate("Mask"), MaterialSocketType::grayscale)},
-                   // Outputs
                    {MaterialOutSocket(generate_uuid(), translate("Output"), MaterialSocketType::color)},
-                   // Props
                    {{"alpha", make_unique<FloatProperty>(
                                   translate("Alpha"), translate("Alpha of the blend"), [this] { execute(); },
                                   FloatProperty::Type::generic, 1.0F, 0.0F, 1.0F, 0.0F, 1.0F)},

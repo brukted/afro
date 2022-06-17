@@ -7,9 +7,9 @@
 #pragma once
 
 #include <array>
+#include <cfloat>
 #include <functional>
 #include <initializer_list>
-#include <limits>
 #include <map>
 #include <memory>
 #include <set>
@@ -22,7 +22,6 @@
 #include "core/curve.h"
 #include "utils/asset.h"
 #include "utils/math.h"
-
 
 namespace afro::core {
 
@@ -338,7 +337,7 @@ class PropsMap {
     auto &ptr = map.at(id);
     AF_ASSERT((dynamic_cast<T *>(ptr.get())) != nullptr)
     return *(dynamic_cast<T *>(ptr.get()));
-  };
+  }
 
   auto draw() -> void;
 };

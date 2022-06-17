@@ -13,7 +13,6 @@
 #include <cstddef>
 #include <stdexcept>
 #include <utility>
-#include <xutility>
 
 #include "core/context.h"
 #include "core/folder.h"
@@ -22,8 +21,6 @@
 #include "utils/asset.h"
 #include "utils/log.h"
 #include "utils/translation.h"
-
-namespace ranges = std::ranges;
 
 // TODO I am not sure if implementations this much functionality inside operators try refactoring
 // into material_graph
@@ -109,7 +106,8 @@ CreateMaterialGraphLink::CreateMaterialGraphLink(MaterialGraph *graph, UUID from
 
 auto CreateMaterialGraphLink::execute() -> void {
   const auto &node = graph->get_node(to_node);
-  const auto dest_socket = ranges::find_if(node.inputs, [&](auto &val) { return val.uid == to_socket; });
+  const auto dest_socket =
+      std::find_if(node.inputs.begin(), node.inputs.end(), [&](auto &val) { return val.uid == to_socket; });
   if (dest_socket->link_uuid.has_value()) {
     preexisting_link = graph->delete_link(dest_socket->link_uuid.value());
   }
@@ -172,14 +170,14 @@ auto DeleteNode::execute() -> void {
 
   // Update all nodes connected to this node
   auto flattened = graph->flatten(node.get());
-  auto it = ranges::remove_if(flattened, [&](auto &val) { return val->uuid == node_uid; });
-  AF_ASSERT((it.size() == 1))
-  flattened.erase(it.begin(), it.end());
-  ranges::for_each(flattened, [&](auto &val) { val->execute(); });
+  auto it = std::remove_if(flattened.begin(), flattened.end(), [&](auto &val) { return val->uuid == node_uid; });
+  //AF_ASSERT((it.size() == 1))
+  flattened.erase(it);
+  std::for_each(flattened.begin(), flattened.end(), [&](auto &val) { val->execute(); });
 }
 auto DeleteNode::undo() -> void {
   graph->add_node(std::move(node));
-  ranges::for_each(links, [&](const auto &link) { graph->add_link(link); });
+  std::for_each(links.begin(), links.end(), [&](const auto &link) { graph->add_link(link); });
   graph->execute_forward(node_uid);
 }
 auto DeleteNode::redo() -> void { execute(); }

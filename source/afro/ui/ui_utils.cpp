@@ -25,8 +25,8 @@ namespace afro::ui {
 
 auto draw_icon(Icon icon) -> void { TextUnformatted(icon_code_point(icon)); };
 
-auto tooltip(std::string_view text, float seconds) -> void {
-  if (IsItemHovered() && !IsItemActive() && GImGui->HoveredIdTimer >= seconds) {
+auto tooltip(std::string_view text, float delay) -> void {
+  if (IsItemHovered() && !IsItemActive() && GImGui->HoveredIdTimer >= delay) {
     BeginTooltip();
     TextUnformatted(text.data());
     EndTooltip();

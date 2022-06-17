@@ -16,7 +16,7 @@
 #include <numeric>
 #include <queue>
 #include <unordered_map>
-#include <xutility>
+#include <utility>
 
 #include "core/property.h"
 #include "core/uuid.h"
@@ -25,8 +25,13 @@
 #include "utils/asset.h"
 #include "utils/embed_data.h"
 
-namespace ranges = std::ranges;
 using namespace gl;
+
+EMBEDDED_DATA(mat_vertex_vert)
+EMBEDDED_DATA(uniform_color_frag)
+EMBEDDED_DATA(blend_frag)
+EMBEDDED_DATA(blur_frag)
+EMBEDDED_DATA(channel_select_frag)
 
 namespace afro::core {
 
@@ -132,23 +137,10 @@ auto MaterialProcessor::deinit() -> void {
 MaterialProcessor::~MaterialProcessor() { AF_ASSERT_MSG(!is_initialized, "OpenGL Leak") }
 
 auto MaterialExecutionContext::setup_proccesors() -> void {
-  EMBEDDED_DATA(mat_vertex_vert);
-  {
-    EMBEDDED_DATA(uniform_color_frag)
-    uniform_color_processor.init(embed_data_mat_vertex_vert, embed_data_uniform_color_frag);
-  }
-  {
-    EMBEDDED_DATA(blend_frag)
-    blend_processor.init(embed_data_mat_vertex_vert, embed_data_blend_frag);
-  }
-  {
-    EMBEDDED_DATA(blur_frag)
-    blur_processor.init(embed_data_mat_vertex_vert, embed_data_blur_frag);
-  }
-  {
-    EMBEDDED_DATA(channel_select_frag)
-    channel_select_processor.init(embed_data_mat_vertex_vert, embed_data_channel_select_frag);
-  }
+  uniform_color_processor.init(embed_data_mat_vertex_vert, embed_data_uniform_color_frag);
+  blend_processor.init(embed_data_mat_vertex_vert, embed_data_blend_frag);
+  blur_processor.init(embed_data_mat_vertex_vert, embed_data_blur_frag);
+  channel_select_processor.init(embed_data_mat_vertex_vert, embed_data_channel_select_frag);
 }
 
 MaterialInSocket::MaterialInSocket(UUID uuid, std::string_view ui_name, MaterialSocketType type)
@@ -166,8 +158,8 @@ MaterialOutSocket::MaterialOutSocket(UUID uuid, std::string_view ui_name, Materi
 
 auto MaterialNode::is_start_node() -> bool {
   int total_inputs = 0;
-  for (auto &i : inputs) {
-    total_inputs += static_cast<int>(i.link_uuid.has_value());
+  for (auto &input : inputs) {
+    total_inputs += static_cast<int>(input.link_uuid.has_value());
   }
   return inputs.empty() || total_inputs == 0;
 }
@@ -209,52 +201,37 @@ void MaterialGraph::deinit() {
   is_initialized = false;
 }
 
+using std::unordered_map;
+
 auto MaterialGraph::flatten(MaterialNode *start_node) -> std::vector<MaterialNode *> {
-  // TODO trash code but it works
-  std::set<UUID> is_visited;
+  unordered_map<UUID, unsigned int> dependencies;
   auto flattened = std::vector<MaterialNode *>();
-  auto current_nodes = std::vector<MaterialNode *>();
-  auto next_nodes = std::vector<MaterialNode *>();
-  auto are_inputs_visited = [&is_visited, this](MaterialNode *node) -> bool {
-    for (auto &in : node->inputs) {
-      if (!in.link_uuid.has_value()) {
-        continue;
-      }
-      auto f = links.at(in.link_uuid.value()).from_node;
-      if (!is_visited.contains(f)) {
-        return false;
-      }
-    }
-    return true;
-  };
-  // Add the first layer which are the start nodes
+  auto queue = std::queue<MaterialNode *>();
+
   for (auto &node_ptr : nodes) {
-    if (node_ptr.second->is_start_node()) {
-      flattened.push_back(node_ptr.second.get());
-      current_nodes.push_back(node_ptr.second.get());
-      is_visited.insert(node_ptr.first);
+    auto &node_inputs = node_ptr.second->inputs;
+    dependencies[node_ptr.second->uuid] =
+        std::count_if(node_inputs.begin(), node_inputs.end(),
+                      [&](const MaterialInSocket &node_input) { return node_input.link_uuid.has_value(); });
+    if (dependencies[node_ptr.second->uuid] == 0) {
+      queue.push(node_ptr.second.get());
     }
   }
-  do {
-    // add the next layer of nodes
-    for (auto *node : current_nodes) {
-      for (auto &out_socket : node->outputs) {
-        for (auto link : out_socket.links) {
-          auto &lk = links.at(link);
-          if (are_inputs_visited(nodes.at(lk.to_node).get())) {
-            next_nodes.push_back(nodes.at(lk.to_node).get());
-          }
+
+  while (!queue.empty()) {
+    auto *node = queue.front();
+    queue.pop();
+    flattened.push_back(node);
+    for (auto &output_socket : node->outputs) {
+      for (auto link_uuid : output_socket.links) {
+        const auto end_node_uuid = links[link_uuid].to_node;
+        dependencies[end_node_uuid] -= 1;
+        if (dependencies[end_node_uuid] == 0) {
+          queue.push(nodes[end_node_uuid].get());
         }
       }
     }
-    for (auto *node : next_nodes) {
-      is_visited.insert(node->uuid);
-    }
-    current_nodes.clear();
-    ranges::copy(next_nodes, std::back_inserter(flattened));
-    ranges::copy(next_nodes, std::back_inserter(current_nodes));
-    next_nodes.clear();
-  } while (!current_nodes.empty());
+  }
   return flattened;
 }
 
@@ -277,11 +254,13 @@ auto MaterialGraph::create_link(UUID from_node, UUID from_socket, UUID to_node, 
   auto &f_node = nodes.at(from_node);
   auto &t_node = nodes.at(to_node);
 
-  ranges::find_if(f_node->outputs, [&](const auto &output) {
+  std::find_if(f_node->outputs.begin(), f_node->outputs.end(), [&](const auto &output) {
     return output.uid == from_socket;
   })->links.push_back(link.uuid);
 
-  ranges::find_if(t_node->inputs, [&](const auto &input) { return input.uid == to_socket; })->link_uuid = link.uuid;
+  std::find_if(t_node->inputs.begin(), t_node->inputs.end(), [&](const auto &input) {
+    return input.uid == to_socket;
+  })->link_uuid = link.uuid;
   return link.uuid;
 }
 
@@ -360,8 +339,8 @@ MaterialNode::MaterialNode(UUID uuid, std::string_view ui_name, std::vector<Mate
       ui_name(ui_name),
       inputs(std::move(inputs)),
       outputs(std::move(outputs)),
-      props(std::move(props)),
-      graph(graph) {}
+      graph(graph),
+      props(std::move(props)) {}
 
 auto MaterialNode::initialize(MaterialExecutionContext *exe_context) -> void {
   AF_ASSERT(!is_initialized)
@@ -385,12 +364,14 @@ auto MaterialNode::on_prop_change() -> void {
   }
 }
 auto MaterialNode::output_socket(UUID socket_uuid) -> MaterialOutSocket & {
-  auto it = ranges::find_if(outputs, [socket_uuid](const auto &socket) { return socket.uid == socket_uuid; });
+  auto it = std::find_if(outputs.begin(), outputs.end(),
+                         [socket_uuid](const auto &socket) { return socket.uid == socket_uuid; });
   AF_ASSERT(it != outputs.end())
   return *it;
 }
 auto MaterialNode::input_socket(UUID socket_uuid) -> MaterialInSocket & {
-  auto it = ranges::find_if(inputs, [socket_uuid](const auto &socket) { return socket.uid == socket_uuid; });
+  auto it = std::find_if(inputs.begin(), inputs.end(),
+                         [socket_uuid](const auto &socket) { return socket.uid == socket_uuid; });
   AF_ASSERT(it != inputs.end())
   return *it;
 };
@@ -401,7 +382,7 @@ auto MaterialNode::create_output_buffers() -> void {
     GLuint texture = 0;
     GLuint framebuffer = 0;
     const auto pixel_format = common_props.get_prop<EnumProperty>("pixel_format").value();
-    const GLenum format = get_gl_format(output.type, (PixelFormat)(pixel_format));
+    const GLenum internalformat = get_gl_format(output.type, (PixelFormat)(pixel_format));
 
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -411,8 +392,8 @@ auto MaterialNode::create_output_buffers() -> void {
     glTexParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MAG_FILTER, gl::GL_NEAREST);
 
     const auto [width, height] = common_props.get_prop<Integer2Property>("output_size").value();
-    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    // TODO Swizzel G & B to R for grayscale
+    glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    // TODO Swizzle G & B to R for grayscale
 
     glGenFramebuffers(1, &framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);

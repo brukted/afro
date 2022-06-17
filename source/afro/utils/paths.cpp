@@ -33,51 +33,51 @@ namespace fs = std::filesystem;
 
 namespace afro::paths {
 
-auto log_dir() -> fs::path {
-  auto path = (fs::temp_directory_path() / "log");
+auto assure_path(fs::path path) -> void {
   if (!fs::exists(path)) {
     fs::create_directories(path);
   }
+}
+
+auto log_dir() -> fs::path {
+  auto path = (fs::temp_directory_path() / "log");
+  assure_path(path);
   return path;
 }
 
 auto temp_dir() -> fs::path {
   auto path = (fs::temp_directory_path() / "afro");
-  if (!fs::exists(path)) {
-    fs::create_directories(path);
-  }
+  assure_path(path);
   return path;
 }
 
 auto data_dir() -> fs::path {
 #if defined(_WIN32)
   auto path = fs::absolute(exe_path().parent_path()) / "data";
-#elif defied(__linux__)
+#elif defined(__linux__)
 #error "data_dir() not implemented on this platform"
 #elif defined(__APPLE__)
-#error "data_dir() not implemented on this platform"
+  auto path = fs::absolute(exe_path().parent_path()) / "data";
+#warning "data_dir() not implemented on this platform"
 #else
 #error "data_dir() not implemented on this platform"
 #endif
-  if (!fs::exists(path)) {
-    fs::create_directories(path);
-  }
+  assure_path(path);
   return path;
 }
 
 auto sys_addons_dir() -> fs::path {
 #if defined(_WIN32)
   auto path = data_dir() / "addons";
-#elif defied(__linux__)
+#elif defined(__linux__)
 #error "sys_addon_dir() not implemented on this platform"
 #elif defined(__APPLE__)
-#error "sys_addon_dir() not implemented on this platform"
+  auto path = data_dir() / "addons";
+#warning "sys_addon_dir() not implemented on this platform"
 #else
 #error "sys_addon_dir() not implemented on this platform"
 #endif
-  if (!fs::exists(path)) {
-    fs::create_directories(path);
-  }
+  assure_path(path);
   return path;
 }
 
@@ -91,9 +91,7 @@ auto user_addons_dir() -> fs::path {
 
 auto config_dir() -> fs::path {
   auto path = (user_data_path() / "config");
-  if (!fs::exists(path)) {
-    fs::create_directories(path);
-  }
+  assure_path(path);
   return path;
 }
 
@@ -111,7 +109,9 @@ auto user_data_path() -> fs::path {
 #elif defined(__linux__)
 #error "user_data_path() not implemented on this platform"
 #elif defined(__APPLE__)
-#error "user_data_path() not implemented on this platform"
+  auto version = fmt::format("{}.{}", build_info::MAJOR_VERSION, build_info::MINOR_VERSION);
+  path = "/Users/bruktedla/afro/" + version;
+#warning "user_data_path() not implemented on this platform"
 #else
 #error "user_data_path() not implemented on this platform"
 #endif
@@ -140,17 +140,13 @@ auto exe_path() -> fs::path {
 
 #elif defined(__APPLE__)
   std::vector<char> buffer;
-  unsigned int buffer_size;
-  path.resize(buffer_size);
-  if (_NSGetExecutablePath(&buffer[0], &bufferSize)) {
-    buffer.resize(bufferSize);
-    _NSGetExecutablePath(&buffer[0], &bufferSize);
+  unsigned int buffer_size = 0;
+  if (_NSGetExecutablePath(buffer.data(), &buffer_size) != 0) {
+    buffer.resize(buffer_size);
+    _NSGetExecutablePath(buffer.data(), &buffer_size);
   }
-  return path.data();
-#else
-#error "exe_path() not implemented on this platform"
+  return buffer.data();
 #endif
-  return "";
 }
 
 auto cache_dir() -> fs::path { return ""; }

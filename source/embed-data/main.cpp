@@ -21,8 +21,8 @@
 #include "fmt/core.h"
 
 namespace fs = std::filesystem;
-using std::string;
 using std::span;
+using std::string;
 
 auto main(int argc, char *argv[]) -> int {
   auto args = span(argv, size_t(argc));
@@ -30,8 +30,8 @@ auto main(int argc, char *argv[]) -> int {
     exit(1);
   }
 
-  auto in_file(args[1]);
-  auto out_file(args[2]);
+  auto *in_file(args[1]);
+  auto *out_file(args[2]);
 
   uintmax_t size = 0;
 
@@ -54,15 +54,14 @@ auto main(int argc, char *argv[]) -> int {
   }
   std::cout << fmt::format("Making source file for {}", in_file) << std::endl;
 
-  ofs << "#include <array>\n\n"
-         "#if defined(_MSC_VER)\n"
-         "#pragma warning(push )\n"
-         "#pragma warning(disable : 4309 )\n"
-         "#pragma warning(disable : 4838 )\n"
+  ofs << "#if defined(_MSC_VER)\n"
+         "  #pragma warning(push )\n"
+         "  #pragma warning(disable : 4309 )\n"
+         "  #pragma warning(disable : 4838 )\n"
          "#elif defined(__GNUC__) || defined(__clang__)\n"
-         "  _Pragma(GCC diagnostic push)\n"
-         "  _Pragma(GCC diagnostic ignored #Wnarrowing)\n"
-         "  _Pragma(GCC diagnostic ignored #Wformat-truncation)\n"
+         "  #pragma GCC diagnostic push\n"
+         "  #pragma GCC diagnostic ignored \"-Wnarrowing\"\n"
+         "  #pragma GCC diagnostic ignored \"-Woverflow\"\n"
          "#endif\n\n";
 
   ofs << fmt::format("/* embed data of file {} */\n\n", in_file);
@@ -105,7 +104,7 @@ auto main(int argc, char *argv[]) -> int {
   ofs << "#if defined(_MSC_VER)\n"
          "#pragma warning( pop )\n"
          "#elif defined(__GNUC__) || defined(__clang__)\n"
-         "_Pragma(GCC diagnostic pop)\n"
+         "#pragma GCC diagnostic pop\n"
          "#endif\n";
   ofs.close();
   return 0;

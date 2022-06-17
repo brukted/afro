@@ -73,4 +73,13 @@ struct ChannelSelectNode : public MaterialNode {
   auto execute() -> void override;
 };
 
+struct CurveNode : public MaterialNode {
+ private:
+  static const EnumItems CHANNELS;
+
+ public:
+  CurveNode(UUID uuid, MaterialGraph* graph);
+  auto execute() -> void override;
+};
+
 }  // namespace afro::core::material_nodes

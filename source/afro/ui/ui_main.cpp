@@ -41,12 +41,15 @@ using afro::core::Context;
 using afro::core::Operation;
 using afro::core::OperatorResult;
 
+EMBEDDED_DATA(droidsans_ttf)
+EMBEDDED_DATA(fa_solid_900_ttf)
+
 namespace afro::ui {
 UiContext::UiContext(core::Context *context) : main_window(nullptr, context), context(context){};
 
 void GLAPIENTRY open_gl_log(gl::GLenum /*unused*/, gl::GLenum /*unused*/, gl::GLuint /*unused*/, gl::GLenum severity,
                             gl::GLsizei /*unused*/, const gl::GLchar *msg, const void * /*unused*/) {
-  log::core_error("OpenGL error : severity {} : {}", severity, msg);
+  log::core_error("OpenGL error : severity {} : {}", static_cast<unsigned int>(severity), msg);
 }
 
 auto UiContext::glfw_callback(int error, const char *description) -> void {
@@ -65,14 +68,14 @@ auto UiContext::init() -> void {
 #if __APPLE__
   const char *glsl_version = "#version 150";
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,
                  (int)(gl::GL_TRUE));  // Required on Mac
 #else
   const char *glsl_version = "#version 130";
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);   // 3.2+
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, (int)(gl::GL_TRUE));  // 3.0+ only
 #endif
@@ -91,10 +94,10 @@ auto UiContext::init() -> void {
   log::core_trace("Initialized OpenGL");
 
 #ifndef NDEBUG
-  log::core_trace("Setting OpenGL debug callback");
-  gl::glEnable(gl::GL_DEBUG_OUTPUT);
-  gl::glDebugMessageCallback(open_gl_log, nullptr);
-  log::core_trace("Set OpenGL debug callback");
+  // log::core_trace("Setting OpenGL debug callback");
+  // gl::glEnable(gl::GL_DEBUG_OUTPUT);
+  // gl::glDebugMessageCallback(open_gl_log, nullptr);
+  // log::core_trace("Set OpenGL debug callback");
 #endif  //! NDEBUG
 
   // Setup Dear ImGui context
@@ -131,7 +134,6 @@ auto UiContext::init() -> void {
   // Load and merge the text font
   config.MergeMode = false;
   log::core_trace("Loading DroidSans from memory");
-  EMBEDDED_DATA(droidsans_ttf)
   io.Fonts->AddFontFromMemoryTTF((void *)embed_data_droidsans_ttf, embed_data_droidsans_ttf_size, size_pixels, &config,
                                  io.Fonts->GetGlyphRangesDefault());
   log::core_trace("Loaded DroidSans from memory");
@@ -139,7 +141,6 @@ auto UiContext::init() -> void {
   config.MergeMode = true;
   const auto icon_ranges = icon_code_points();
   log::core_trace("Loading icon font from memory");
-  EMBEDDED_DATA(fa_solid_900_ttf)
   io.Fonts->AddFontFromMemoryTTF((void *)embed_data_fa_solid_900_ttf, embed_data_fa_solid_900_ttf_size, size_pixels,
                                  &config, icon_ranges.data());
   log::core_trace("Loaded icon font from memory");

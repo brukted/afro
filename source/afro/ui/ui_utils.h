@@ -51,7 +51,7 @@ auto draw_operator(const std::string_view name, core::Context *ctx, const Icon i
  * @param text Text to display in the tooltip.
  * @param seconds Delay before the tooltip is displayed. By default, it is taken from preferences.
  */
-auto tooltip(std::string_view text, float seconds = Preferences::get().theme.user_interface.tooltip.delay) -> void;
+auto tooltip(std::string_view text, float delay = 1.0F) -> void;
 
 /**
  * @brief Draws a curve editor for the given curve.

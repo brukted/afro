@@ -58,12 +58,12 @@ struct MaterialProcessor {
   ~MaterialProcessor();
 
   auto execute(gl::GLuint output_frame_buf, gl::GLuint tex_buf, int width, int height) const -> void;
-  auto set_prop(const std::string_view uniform_name, const Float4Property &prop) const -> void;
-  auto set_prop(const std::string_view uniform_name, const EnumProperty &prop) const -> void;
-  auto set_prop(const std::string_view uniform_name, const FloatProperty &prop) const -> void;
-  auto set_prop(const std::string_view uniform_name, const Float2Property &prop) const -> void;
-  auto set_uniform(const std::string_view uniform_name, const int val) const -> void;
-  auto set_texture(const std::string_view sampler_name, const gl::GLuint texture_unit) const -> void;
+  auto set_prop(std::string_view uniform_name, const Float4Property &prop) const -> void;
+  auto set_prop(std::string_view uniform_name, const EnumProperty &prop) const -> void;
+  auto set_prop(std::string_view uniform_name, const FloatProperty &prop) const -> void;
+  auto set_prop(std::string_view uniform_name, const Float2Property &prop) const -> void;
+  auto set_uniform(std::string_view uniform_name, int val) const -> void;
+  auto set_texture(std::string_view sampler_name, gl::GLuint texture_unit) const -> void;
 };
 
 struct MaterialGraph;

@@ -7,6 +7,7 @@
 #include <core/uuid.h>
 
 #include <memory>
+#include <string>
 
 #include "operator.h"
 #include "utils/translation.h"
@@ -19,8 +20,8 @@ struct Folder;
 struct AddFolder : Operator {
   UUID folder_uid = 0;
   Folder* parent;
-  std::unique_ptr<Folder> folder;
-  std::string folder_name{translate("Untitled")};
+  std::unique_ptr<Folder> folder = nullptr;
+  std::string folder_name = translate("Untitled");
   AddFolder(Folder* parent);
   auto execute() -> void override;
   auto undo() -> void override;

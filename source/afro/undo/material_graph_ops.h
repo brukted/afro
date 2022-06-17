@@ -92,7 +92,7 @@ struct AddNode : Operator {
   auto undo() -> void override {
     auto flatten = graph->flatten(&graph->get_node(node_uuid));
     node = graph->delete_node(node_uuid);
-    std::ranges::for_each(flatten, [&](auto *node) {
+    std::for_each(flatten.begin(), flatten.end(), [&](auto *node) {
       if (node->uuid != node_uuid) {
         node->execute();
       }
