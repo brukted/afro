@@ -34,21 +34,21 @@ auto MaterialEditor::draw(bool *p_open) -> void {
     ImGui::End();
     return;
   }
-  imnodes::EditorContextSet(imnodes_context);
-  imnodes::BeginNodeEditor();
+  ImNodes::EditorContextSet(imnodes_context);
+  ImNodes::BeginNodeEditor();
   /// Draws nodes
   for (auto &node : graph->nodes) {
     draw_node(node.second.get());
   }
   // Draws links
   for (const auto &[uuid, link] : graph->links) {
-    imnodes::Link(link_id_map.create_or_get_int(uuid), attr_id_map.create_or_get_int(link.from_socket),
+    ImNodes::Link(link_id_map.create_or_get_int(uuid), attr_id_map.create_or_get_int(link.from_socket),
                   attr_id_map.create_or_get_int(link.to_socket));
   }
   for (auto &[uuid, comment_node] : graph->comments) {
     draw_comment_node(*comment_node.get());
   }
-  imnodes::EndNodeEditor();
+  ImNodes::EndNodeEditor();
   // Draw main context menu
   main_context_menu();
   check_for_new_links();
@@ -58,40 +58,40 @@ auto MaterialEditor::draw(bool *p_open) -> void {
 }
 
 auto MaterialEditor::draw_node(core::MaterialNode *node) -> void {
-  auto &style = imnodes::GetStyle();
-  imnodes::BeginNode(node_id_map.create_or_get_int(node->uuid));
-  imnodes::BeginNodeTitleBar();
+  auto &style = ImNodes::GetStyle();
+  ImNodes::BeginNode(node_id_map.create_or_get_int(node->uuid));
+  ImNodes::BeginNodeTitleBar();
   ImGui::TextUnformatted(node->ui_name.data());
-  imnodes::EndNodeTitleBar();
+  ImNodes::EndNodeTitleBar();
   for (auto &in : node->inputs) {
     switch (in.type) {
       case MaterialSocketType::color:
-        style.colors[imnodes::ColorStyle_Pin] = IM_COL32(255, 255, 0, 255);
+        style.Colors[ImNodesCol_::ImNodesCol_Pin] = IM_COL32(255, 255, 0, 255);
         break;
       case MaterialSocketType::grayscale:
-        style.colors[imnodes::ColorStyle_Pin] = IM_COL32(128, 128, 128, 255);
+        style.Colors[ImNodesCol_::ImNodesCol_Pin] = IM_COL32(128, 128, 128, 255);
         break;
       case MaterialSocketType::universal:
-        style.colors[imnodes::ColorStyle_Pin] = IM_COL32(255, 255, 255, 255);
+        style.Colors[ImNodesCol_::ImNodesCol_Pin] = IM_COL32(255, 255, 255, 255);
 
         break;
     }
-    imnodes::BeginInputAttribute(attr_id_map.create_or_get_int(in.uid));
+    ImNodes::BeginInputAttribute(attr_id_map.create_or_get_int(in.uid));
     ImGui::TextUnformatted(in.ui_name.data());
-    imnodes::EndInputAttribute();
+    ImNodes::EndInputAttribute();
   }
   for (auto &out : node->outputs) {
     switch (out.type) {
       case MaterialSocketType::color:
-        style.colors[imnodes::ColorStyle_Pin] = IM_COL32(255, 255, 0, 255);
+        style.Colors[ImNodesCol_::ImNodesCol_Pin] = IM_COL32(255, 255, 0, 255);
         break;
       case MaterialSocketType::grayscale:
-        style.colors[imnodes::ColorStyle_Pin] = IM_COL32(128, 128, 128, 255);
+        style.Colors[ImNodesCol_::ImNodesCol_Pin] = IM_COL32(128, 128, 128, 255);
         break;
     }
-    imnodes::BeginOutputAttribute(attr_id_map.create_or_get_int(out.uid));
+    ImNodes::BeginOutputAttribute(attr_id_map.create_or_get_int(out.uid));
     ImGui::TextUnformatted(out.ui_name.data());
-    imnodes::EndOutputAttribute();
+    ImNodes::EndOutputAttribute();
   }
   gl::GLuint tex = 0;
   if (!node->outputs.empty()) {
@@ -104,16 +104,16 @@ auto MaterialEditor::draw_node(core::MaterialNode *node) -> void {
     uintptr_t ptr = tex;
     ImGui::Image((ImTextureID)ptr, {ImGui::GetFontSize() * 7, ImGui::GetFontSize() * 7});
   }
-  imnodes::EndNode();
+  ImNodes::EndNode();
   if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) {
     af_context->ui_context.main_window.parameter_editor.open(node);
   }
 }
 
 auto MaterialEditor::draw_comment_node(core::CommentNode &node) -> void {
-  imnodes::BeginNode(node_id_map.create_or_get_int(node.uuid));
+  ImNodes::BeginNode(node_id_map.create_or_get_int(node.uuid));
   ImGui::InputText("###comment", &node.comment);
-  imnodes::EndNode();
+  ImNodes::EndNode();
 }
 
 auto MaterialEditor::open_graph(core::MaterialGraph *new_graph) -> void {
@@ -124,26 +124,26 @@ auto MaterialEditor::open_graph(core::MaterialGraph *new_graph) -> void {
     exe_context = MaterialExecutionContext();
     exe_context.value().setup_proccesors();
   }
-  imnodes_context = imnodes::EditorContextCreate();
-  imnodes::EditorContextSet(imnodes_context);
+  imnodes_context = ImNodes::EditorContextCreate();
+  ImNodes::EditorContextSet(imnodes_context);
   graph = new_graph;
   graph->init(&exe_context.value());
   for (const auto &[uuid, node_ptr] : graph->nodes) {
-    imnodes::SetNodeGridSpacePos(node_id_map.create_or_get_int(uuid),
+    ImNodes::SetNodeGridSpacePos(node_id_map.create_or_get_int(uuid),
                                  {node_ptr->ui_info.x_pos, node_ptr->ui_info.y_pos});
   }
 }
 
 auto MaterialEditor::close_graph() -> void {
-  imnodes::EditorContextSet(imnodes_context);
+  ImNodes::EditorContextSet(imnodes_context);
   for (const auto &[uuid, node_ptr] : graph->nodes) {
-    const auto node_pos = imnodes::GetNodeGridSpacePos(node_id_map.get_int(uuid));
+    const auto node_pos = ImNodes::GetNodeGridSpacePos(node_id_map.get_int(uuid));
     node_ptr->ui_info.x_pos = node_pos.x;
     node_ptr->ui_info.y_pos = node_pos.y;
   }
   graph->deinit();
   graph = nullptr;
-  imnodes::EditorContextFree(imnodes_context);
+  ImNodes::EditorContextFree(imnodes_context);
   node_id_map.reset();
   attr_id_map.reset();
   link_id_map.reset();
@@ -153,7 +153,7 @@ auto MaterialEditor::main_context_menu() -> void {
   // const auto mouse_pos = ImGui::GetMousePos();
   int hovered_node = 0;
   if (ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows) && ImGui::IsMouseDown(ImGuiMouseButton_Right) &&
-      !imnodes::IsNodeHovered(&hovered_node)) {
+      !ImNodes::IsNodeHovered(&hovered_node)) {
     ImGui::OpenPopup("main_context_menu");
   }
   if (ImGui::BeginPopup("main_context_menu")) {
@@ -174,7 +174,7 @@ auto MaterialEditor::check_for_new_links() -> void {
   int from_socket = 0;
   int to_node = 0;
   int to_socket = 0;
-  if (imnodes::IsLinkCreated(&from_node, &from_socket, &to_node, &to_socket)) {
+  if (ImNodes::IsLinkCreated(&from_node, &from_socket, &to_node, &to_socket)) {
     af_context->queue_operation<CreateMaterialGraphLink>(
         graph, node_id_map.get_uuid(from_node), attr_id_map.get_uuid(from_socket), node_id_map.get_uuid(to_node),
         attr_id_map.get_uuid(to_socket));
@@ -183,25 +183,25 @@ auto MaterialEditor::check_for_new_links() -> void {
 
 auto MaterialEditor::check_for_deleted_links() -> void {
   // TODO delete the selected links too
-  auto selected_links = std::vector<int>(imnodes::NumSelectedLinks());
+  auto selected_links = std::vector<int>(ImNodes::NumSelectedLinks());
   if (!selected_links.empty() && ImGui::IsKeyPressed(GLFW_KEY_DELETE)) {
     for (const auto link_id : selected_links) {
       af_context->queue_operation<DeleteMaterialGraphLink>(graph, link_id_map.get_uuid(link_id));
     }
-    imnodes::ClearLinkSelection();
+    ImNodes::ClearLinkSelection();
   }
   int link_id = 0;
-  if (imnodes::IsLinkDestroyed(&link_id)) {
+  if (ImNodes::IsLinkDestroyed(&link_id)) {
     af_context->queue_operation<DeleteMaterialGraphLink>(graph, link_id_map.get_uuid(link_id));
   }
 }
 
 auto MaterialEditor::check_for_deleted_nodes() -> void {
-  auto sel_nodes = std::vector<int>(imnodes::NumSelectedNodes(), 0);
+  auto sel_nodes = std::vector<int>(ImNodes::NumSelectedNodes(), 0);
   if (sel_nodes.empty() || !ImGui::IsKeyPressed(GLFW_KEY_DELETE)) {
     return;
   }
-  imnodes::GetSelectedNodes(sel_nodes.data());
+  ImNodes::GetSelectedNodes(sel_nodes.data());
   for (const auto node_id : sel_nodes) {
     af_context->queue_operation<DeleteNode>(graph, node_id_map.get_uuid(node_id));
   }

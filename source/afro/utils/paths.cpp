@@ -110,7 +110,7 @@ auto user_data_path() -> fs::path {
 #error "user_data_path() not implemented on this platform"
 #elif defined(__APPLE__)
   auto version = fmt::format("{}.{}", build_info::MAJOR_VERSION, build_info::MINOR_VERSION);
-  path = "/Users/bruktedla/afro/" + version;
+  path = "/Users/leultefera/afro/" + version;
 #warning "user_data_path() not implemented on this platform"
 #else
 #error "user_data_path() not implemented on this platform"

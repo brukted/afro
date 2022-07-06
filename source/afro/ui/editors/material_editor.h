@@ -24,9 +24,7 @@ namespace afro::ui {
 enum class Icon;
 }
 
-namespace imnodes {
-struct EditorContext;
-}
+struct ImNodesEditorContext;
 
 namespace afro::ui {
 struct MaterialEditor {
@@ -59,7 +57,7 @@ struct MaterialEditor {
   };
 
   core::MaterialGraph *graph = nullptr;
-  imnodes::EditorContext *imnodes_context = nullptr;
+  ImNodesEditorContext *imnodes_context = nullptr;
   std::optional<core::MaterialExecutionContext> exe_context;
   // Pointer to afro's context
   core::Context *af_context;

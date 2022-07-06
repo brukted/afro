@@ -106,7 +106,7 @@ auto UiContext::init() -> void {
   ImGui::CreateContext();
   log::core_trace("Created ImGui Context");
   log::core_trace("Creating imnodes Context");
-  imnodes::CreateContext();
+  ImNodes::CreateContext();
   log::core_trace("Created imnodes Context");
   ImGuiIO &io = ImGui::GetIO();
   (void)io;
@@ -163,7 +163,7 @@ auto UiContext::init() -> void {
 auto UiContext::deinit() const -> void {
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
-  imnodes::DestroyContext();
+  ImNodes::DestroyContext();
   ImGui::DestroyContext();
   glfwDestroyWindow(main_window.glfw_window);
   glfwTerminate();

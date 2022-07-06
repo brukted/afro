@@ -12,11 +12,17 @@
     {
       "name": "imgui",
       "default-features": false,
-      "features": ["opengl3-binding", "glfw-binding", "docking-experimental"]
+      "features": [
+        "opengl3-binding",
+        "glfw-binding",
+        "docking-experimental"
+      ]
     },
     {
       "name": "openimageio",
-      "features": ["freetype"]
+      "features": [
+        "freetype"
+      ]
     },
     "nativefiledialog",
     "cereal",

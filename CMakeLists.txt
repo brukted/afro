@@ -8,15 +8,14 @@ enable_testing()
 # Declare project
 #
 
-set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg-export/scripts/buildsystems/vcpkg.cmake"
         CACHE STRING "Vcpkg toolchain file")
 
 project(
-  afro
-  VERSION 0.1.0
-  LANGUAGES CXX
-  DESCRIPTION "A procedural material creating software package")
-
+        afro
+        VERSION 0.1.0
+        LANGUAGES CXX
+        DESCRIPTION "A procedural material creating software package")
 
 #
 # Configure vcpkg
@@ -60,8 +59,8 @@ enable_clang_tidy(ON)
 #
 
 add_subdirectory(deploy)
-if(AFRO_WITH_DOCS)
-  add_subdirectory(docs)
-endif()
+if (AFRO_WITH_DOCS)
+    add_subdirectory(docs)
+endif ()
 add_subdirectory(external)
 add_subdirectory(source)

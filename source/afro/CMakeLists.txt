@@ -12,6 +12,7 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(OpenImageIO CONFIG REQUIRED)
 find_package(unofficial-nativefiledialog CONFIG REQUIRED)
 find_package(cereal CONFIG REQUIRED)
+find_package(PNG REQUIRED)
 
 #
 # Resources
@@ -73,7 +74,7 @@ target_link_libraries(
          glbinding::glbinding
          glfw
          imgui::imgui
-         unofficial::imnodes::imnodes
+         unofficial::imnodesimnodes
          OpenImageIO::OpenImageIO
          OpenImageIO::OpenImageIO_Util
          unofficial::nativefiledialog::nfd
