@@ -57,8 +57,8 @@ add_subdirectory(utils)
 #
 
 target_include_directories(
-  afro PRIVATE ${DEFAULT_INCLUDE_DIRECTORIES} ${CMAKE_CURRENT_BINARY_DIR}
-               ${CMAKE_CURRENT_SOURCE_DIR})
+        afro PRIVATE ${DEFAULT_INCLUDE_DIRECTORIES} ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_include_directories(afro PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -67,19 +67,19 @@ target_include_directories(afro PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 #
 
 target_link_libraries(
-  afro
-  PUBLIC ${DEFAULT_LIBRARIES}
-         spdlog::spdlog_header_only
-         fmt::fmt-header-only
-         glbinding::glbinding
-         glfw
-         imgui::imgui
-         unofficial::imnodesimnodes
-         OpenImageIO::OpenImageIO
-         OpenImageIO::OpenImageIO_Util
-         unofficial::nativefiledialog::nfd
-         glm::glm
-         cereal::cereal)
+        afro
+        PUBLIC ${DEFAULT_LIBRARIES}
+        spdlog::spdlog_header_only
+        fmt::fmt-header-only
+        glbinding::glbinding
+        glfw
+        imgui::imgui
+        unofficial::imnodesimnodes
+        OpenImageIO::OpenImageIO
+        OpenImageIO::OpenImageIO_Util
+        unofficial::nativefiledialog::nfd
+        glm::glm
+        cereal::cereal)
 
 #
 # Compile definitions

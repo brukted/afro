@@ -77,7 +77,7 @@ auto ParameterEditor::draw_material_node() -> void {
     mat_node->common_props.draw();
   }
   if (ImGui::CollapsingHeader(translate("Specfic Properties"))) {
-    mat_node->props.draw();
+    mat_node->common_props.draw();
   }
 }
 }  // namespace afro::ui

@@ -29,20 +29,30 @@ namespace afro::core {
 
 using PropertyCallback = std::function<void()>;
 
+struct PropertyDefinition {
+  std::string_view id;
+  std::string_view name;
+  std::string_view description;
+  PropertyDefinition(const std::string_view &id, const std::string_view &name,
+                     const std::string_view &description);
+};
+
 class Property {
+ protected:
+  PropertyDefinition *property_definition;
+
  public:
+  PropertyCallback callback;
+
   Property() = default;
+  Property(PropertyDefinition *propertyDefinition, PropertyCallback callback);
   virtual auto draw() -> void = 0;
   virtual auto draw_edit() -> void = 0;
 
   virtual ~Property() = default;
 };
 
-class IntegerProperty : public Property {
-  std::string_view name;
-  PropertyCallback callback;
-  std::string_view description;
-  int m_value;
+struct IntegerPropertyDefinition : PropertyDefinition {
   int default_value;
   int min;
   int max;
@@ -50,25 +60,30 @@ class IntegerProperty : public Property {
   int ui_max;
   float step;
 
+  IntegerPropertyDefinition(const std::string_view &id,
+                            const std::string_view &name,
+                            const std::string_view &description,
+                            int defaultValue, int min, int max, int uiMin,
+                            int uiMax, float step);
+};
+
+class IntegerProperty : public Property {
+ private:
+  int m_value{};
+
  public:
-  IntegerProperty(std::string_view name, std::string_view description, PropertyCallback callback, int default_value = 0,
-                  int ui_min = INT_MIN, int ui_max = INT_MAX, int min = INT_MIN, int max = INT_MAX, float step = 1.0F);
+  IntegerProperty(IntegerPropertyDefinition *propertyDefinition,
+                  const PropertyCallback &callback);
+
   auto draw() -> void override;
   auto draw_edit() -> void override{};
   [[nodiscard]] auto value() const -> int;
-  ~IntegerProperty() override = default;
 };
 
-class FloatProperty : public Property {
- public:
-  enum class Type : char { generic, angle, color_grayscale };
+enum class FloatPropertyType : char { generic, angle, color_grayscale };
 
- private:
-  std::string_view name;
-  PropertyCallback callback;
-  std::string_view description;
-  float m_value;
-  Type type;
+struct FloatPropertyDefinition : PropertyDefinition {
+  FloatPropertyType type;
   float default_value;
   float min;
   float max;
@@ -76,130 +91,159 @@ class FloatProperty : public Property {
   float ui_max;
   float step;
 
+  FloatPropertyDefinition(const std::string_view &id,
+                          const std::string_view &name,
+                          const std::string_view &description,
+                          FloatPropertyType type, float defaultValue, float min,
+                          float max, float uiMin, float uiMax, float step);
+};
+
+class FloatProperty : public Property {
+ private:
+  float m_value;
+
  public:
-  FloatProperty(std::string_view name, std::string_view description, PropertyCallback callback, Type type,
-                float default_value = 0.0F, float ui_min = FLT_MIN, float ui_max = FLT_MAX, float min = FLT_MIN,
-                float max = FLT_MAX, float step = 0.01F);
+  FloatProperty(FloatPropertyDefinition *propertyDefinition,
+                const PropertyCallback &callback);
+
   auto draw() -> void override;
   auto draw_edit() -> void override{};
   [[nodiscard]] auto value() const -> float;
-  ~FloatProperty() override = default;
 };
 
-class Float2Property : public Property {
- public:
-  enum class Type : char { generic, position, transform_offset };
+enum class Float2PropertyType : char { generic, position, transform_offset };
 
- private:
-  std::string_view name;
-  PropertyCallback callback;
-  std::string_view description;
-  FVec2 m_value;
+struct Float2PropertyDefinition : PropertyDefinition {
+  Float2PropertyType type;
   FVec2 default_value;
   float min;
   float max;
   float ui_min;
   float ui_max;
   float step;
-  Type type;
+
+  Float2PropertyDefinition(const std::string_view &id,
+                           const std::string_view &name,
+                           const std::string_view &description,
+                           Float2PropertyType type, const FVec2 &defaultValue,
+                           float min, float max, float uiMin, float uiMax,
+                           float step);
+};
+
+class Float2Property : public Property {
+ private:
+  FVec2 m_value;
 
  public:
-  Float2Property(std::string_view name, std::string_view description, Type type, PropertyCallback callback,
-                 FVec2 default_value = {0.0F, 0.0F}, float ui_min = FLT_MIN, float ui_max = FLT_MAX,
-                 float min = FLT_MIN, float max = FLT_MAX, float step = 0.01F);
+  Float2Property(Float2PropertyDefinition *propertyDefinition,
+                 const PropertyCallback &callback);
+
   auto draw() -> void override;
   auto draw_edit() -> void override{};
   [[nodiscard]] auto value() const -> FVec2;
-  ~Float2Property() override = default;
 };
 
-class Float3Property : public Property {
- public:
-  enum class Type : char { generic, color_rgb };
+enum class Float3PropertyType : char { generic, color_rgb };
 
- private:
-  std::string_view name;
-  PropertyCallback callback;
-  std::string_view description;
-  FVec3 m_value;
+struct Float3PropertyDefinition : PropertyDefinition {
   FVec3 default_value;
   float min;
   float max;
   float ui_min;
   float ui_max;
   float step;
-  Type type;
+  Float3PropertyType type;
+
+  Float3PropertyDefinition(const std::string_view &id,
+                           const std::string_view &name,
+                           const std::string_view &description,
+                           const FVec3 &default_value, float min, float max,
+                           float ui_min, float ui_max, float step,
+                           Float3PropertyType type);
+};
+
+class Float3Property : public Property {
+ private:
+  FVec3 m_value;
 
  public:
-  Float3Property(std::string_view name, std::string_view description, PropertyCallback callback, Type type,
-                 FVec3 default_value = {0.0F, 0.0F, 0.0F}, float ui_min = FLT_MIN, float ui_max = FLT_MAX,
-                 float min = FLT_MIN, float max = FLT_MAX, float step = 1.0F);
+  Float3Property(Float3PropertyDefinition *propertyDefinition,
+                 const PropertyCallback &callback);
+
   auto draw() -> void override;
   auto draw_edit() -> void override{};
   [[nodiscard]] auto value() const -> FVec3;
-  ~Float3Property() override = default;
 };
 
-class Float4Property : public Property {
- public:
-  enum class Type : char { generic, color_rgba };
+enum class Float4PropertyType : char { generic, color_rgba };
 
- private:
-  std::string_view name;
-  PropertyCallback callback;
-  std::string_view description;
-  FVec4 m_value;
+struct Float4PropertyDefinition : PropertyDefinition {
   FVec4 default_value;
   float min;
   float max;
   float ui_min;
   float ui_max;
   float step;
-  Type type;
+  Float4PropertyType type;
+
+  Float4PropertyDefinition(const std::string_view &id,
+                           const std::string_view &name,
+                           const std::string_view &description,
+                           const FVec4 &default_value, Float4PropertyType type,
+                           float min = FLT_MIN, float max = FLT_MAX,
+                           float ui_min = FLT_MIN, float ui_max = FLT_MAX,
+                           float step = 0.1F);
+};
+
+class Float4Property : public Property {
+ private:
+  FVec4 m_value;
 
  public:
-  Float4Property(std::string_view name, std::string_view description, PropertyCallback callback, Type type,
-                 FVec4 default_value = {0.0F, 0.0F, 0.0F, 1.0F}, float ui_min = FLT_MIN, float ui_max = FLT_MAX,
-                 float min = FLT_MIN, float max = FLT_MAX, float step = 1.0F);
+  Float4Property(Float4PropertyDefinition *propertyDefinition,
+                 const PropertyCallback &callback);
+
   auto draw() -> void override;
   auto draw_edit() -> void override{};
   [[nodiscard]] auto value() const -> FVec4;
   ~Float4Property() override = default;
 };
+enum class Integer2PropertyType : char { generic, size_pow_2 };
 
-class Integer2Property : public Property {
- public:
-  enum class Type : char { generic, size_pow_2 };
-
- private:
-  std::string_view name;
-  PropertyCallback callback;
-  std::string_view description;
-  IVec2 m_value;
-  IVec2 pow;
+struct Integer2PropertyDefinition : PropertyDefinition {
   IVec2 default_value;
   int min;
   int max;
   int ui_min;
   int ui_max;
   float step;
-  Type type;
+  Integer2PropertyType type;
+
+  Integer2PropertyDefinition(const std::string_view &id,
+                             const std::string_view &name,
+                             const std::string_view &description,
+                             const IVec2 &default_value, int min, int max,
+                             int ui_min, int ui_max, float step,
+                             Integer2PropertyType type);
+};
+
+class Integer2Property : public Property {
+ private:
+  IVec2 pow;
+  IVec2 m_value;
 
  public:
-  Integer2Property(std::string_view name, std::string_view description, PropertyCallback callback, Type type,
-                   IVec2 default_value = {0, 0}, int ui_min = INT_MIN, int ui_max = INT_MAX, int min = INT_MIN,
-                   int max = INT_MAX, float step = 1.0F);
+  Integer2Property(Integer2PropertyDefinition *propertyDefinition,
+                   const PropertyCallback &callback);
+
   auto draw() -> void override;
   auto draw_edit() -> void override{};
   [[nodiscard]] auto value() const -> IVec2;
   ~Integer2Property() override = default;
 };
 
-class Integer3Property : public Property {
-  std::string_view name;
-  PropertyCallback callback;
-  std::string_view description;
-  IVec3 m_value;
+struct Integer3PropertyDefinition : PropertyDefinition {
+  IVec3 pow;
   IVec3 default_value;
   int min;
   int max;
@@ -207,21 +251,30 @@ class Integer3Property : public Property {
   int ui_max;
   float step;
 
+  Integer3PropertyDefinition(const std::string_view &id,
+                             const std::string_view &name,
+                             const std::string_view &description,
+                             const IVec3 &pow, const IVec3 &default_value,
+                             int min, int max, int ui_min, int ui_max,
+                             float step);
+};
+
+class Integer3Property : public Property {
+ private:
+  IVec3 m_value;
+
  public:
-  Integer3Property(std::string_view name, std::string_view description, PropertyCallback callback,
-                   IVec3 default_value = {0, 0, 0}, int ui_min = INT_MIN, int ui_max = INT_MAX, int min = INT_MIN,
-                   int max = INT_MAX, float step = 1.0F);
+  Integer3Property(Integer3PropertyDefinition *propertyDefinition,
+                   const PropertyCallback &callback);
+
   auto draw() -> void override;
   auto draw_edit() -> void override{};
   [[nodiscard]] auto value() const -> IVec3;
   ~Integer3Property() override = default;
 };
 
-class Integer4Property : public Property {
-  std::string_view name;
-  PropertyCallback callback;
-  std::string_view description;
-  IVec4 m_value;
+struct Integer4PropertyDefinition : PropertyDefinition {
+  IVec4 pow;
   IVec4 default_value;
   int min;
   int max;
@@ -229,49 +282,70 @@ class Integer4Property : public Property {
   int ui_max;
   float step;
 
+  Integer4PropertyDefinition(const std::string_view &id,
+                             const std::string_view &name,
+                             const std::string_view &description,
+                             const IVec4 &pow, const IVec4 &default_value,
+                             int min, int max, int ui_min, int ui_max,
+                             float step);
+};
+
+class Integer4Property : public Property {
+ private:
+  IVec4 m_value;
+
  public:
-  Integer4Property(std::string_view name, std::string_view description, PropertyCallback callback,
-                   IVec4 default_value = {0, 0, 0, 0}, int ui_min = INT_MIN, int ui_max = INT_MAX, int min = INT_MIN,
-                   int max = INT_MAX, float step = 1.0F);
+  Integer4Property(Integer4PropertyDefinition *propertyDefinition,
+                   const PropertyCallback &callback);
   auto draw() -> void override;
   auto draw_edit() -> void override{};
   [[nodiscard]] auto value() const -> IVec4;
   ~Integer4Property() override = default;
 };
 
-class StringProperty : public Property {
- public:
-  enum class Type : char { path, text };
+enum class StringPropertyType : char { path, text };
 
- private:
-  std::string_view name;
-  PropertyCallback callback;
-  std::string_view description;
-  std::string m_value;
-  Type type;
+struct StringPropertyDefinition : PropertyDefinition {
+  StringPropertyType type;
   int max_len;
   std::string default_value;
 
+  StringPropertyDefinition(const std::string_view &id,
+                           const std::string_view &name,
+                           const std::string_view &description,
+                           StringPropertyType type, int max_len,
+                           const std::string &default_value);
+};
+
+class StringProperty : public Property {
+ private:
+  std::string m_value;
+
  public:
-  StringProperty(std::string_view name, std::string_view description, PropertyCallback callback, Type type,
-                 std::string_view default_value = "", int max_len = 100);
+  StringProperty(StringPropertyDefinition *propertyDefinition,
+                 const PropertyCallback &callback);
   auto draw() -> void override;
   auto draw_edit() -> void override{};
   [[nodiscard]] auto value() const -> const std::string &;
   ~StringProperty() override = default;
 };
 
-class BoolProperty : public Property {
- private:
-  std::string_view name;
-  PropertyCallback callback;
-  std::string_view description;
-  bool m_value;
+struct BoolPropertyDefinition : PropertyDefinition {
   bool default_value;
 
+  BoolPropertyDefinition(const std::string_view &id,
+                         const std::string_view &name,
+                         const std::string_view &description,
+                         bool default_value);
+};
+
+class BoolProperty : public Property {
+ private:
+  bool m_value;
+
  public:
-  BoolProperty(std::string_view name, std::string_view description, PropertyCallback callback,
-               bool default_value = false);
+  BoolProperty(BoolPropertyDefinition *propertyDefinition,
+               const PropertyCallback &callback);
   auto draw() -> void override;
   auto draw_edit() -> void override{};
   [[nodiscard]] auto value() const -> bool;
@@ -282,27 +356,33 @@ class BoolProperty : public Property {
 using EnumItem = std::tuple<std::string_view, std::string_view, int>;
 using EnumItems = std::vector<EnumItem>;
 
-class EnumProperty : public Property {
-  std::string_view name;
-  PropertyCallback callback;
-  std::string_view description;
-  EnumItem m_value;
+struct EnumPropertyDefinition : PropertyDefinition {
   EnumItem default_value;
   EnumItems items;
 
+  EnumPropertyDefinition(const std::string_view &id,
+                         const std::string_view &name,
+                         const std::string_view &description,
+                         const EnumItem &default_value, const EnumItems &items);
+};
+
+class EnumProperty : public Property {
+ private:
+  EnumItem m_value;
+
  public:
-  EnumProperty(std::string_view name, std::string_view description, EnumItems items, int default_value,
-               PropertyCallback callback);
+  EnumProperty(EnumPropertyDefinition *propertyDefinition,
+               const PropertyCallback &callback);
   auto draw() -> void override;
   auto draw_edit() -> void override{};
   [[nodiscard]] auto value() const -> int;
   ~EnumProperty() override = default;
 };
 
+struct CurvePropertyDefinition : PropertyDefinition {};
+
 class CurveProperty : public Property {
-  std::string_view name;
-  PropertyCallback callback;
-  std::string_view description;
+ private:
   bezier::BezierSpline lum_curve;
   bezier::BezierSpline r_curve;
   bezier::BezierSpline g_curve;
@@ -311,7 +391,8 @@ class CurveProperty : public Property {
 
  public:
   enum class Channel : char { lum, r, g, b, a };
-  CurveProperty(std::string_view name, std::string_view description, PropertyCallback callback);
+  CurveProperty(CurvePropertyDefinition *propertyDefinition,
+                const PropertyCallback &callback);
   auto draw() -> void override;
   auto draw_edit() -> void override{};
   /**
@@ -320,13 +401,15 @@ class CurveProperty : public Property {
    * @param channel One of the channels defined in the enum
    * @return bezier::BezierSpline
    */
-  [[nodiscard]] auto value(Channel channel = Channel::lum) const -> bezier::BezierSpline;
+  [[nodiscard]] auto value(Channel channel = Channel::lum) const
+      -> bezier::BezierSpline;
   ~CurveProperty() override = default;
 };
 
 class PropsMap {
   std::map<std::string_view, std::unique_ptr<Property>> map;
-  using value_type = std::pair<const std::basic_string_view<char>, std::unique_ptr<afro::core::Property>>;
+  using value_type = std::pair<const std::basic_string_view<char>,
+                               std::unique_ptr<afro::core::Property>>;
 
  public:
   PropsMap() = default;

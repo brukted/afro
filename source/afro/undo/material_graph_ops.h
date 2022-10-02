@@ -56,7 +56,8 @@ struct CreateMaterialGraphLink : Operator {
   UUID link_uid = 0;
   MaterialGraphLink link{};  // to store the link after undoing
   std::optional<MaterialGraphLink> preexisting_link;
-  CreateMaterialGraphLink(MaterialGraph *graph, UUID from_node, UUID from_socket, UUID to_node, UUID to_socket);
+  CreateMaterialGraphLink(MaterialGraph *graph, UUID from_node,
+                          UUID from_socket, UUID to_node, UUID to_socket);
   auto execute() -> void override;
   auto undo() -> void override;
   auto redo() -> void override;
@@ -72,37 +73,28 @@ struct DeleteMaterialGraphLink : Operator {
   auto redo() -> void override;
 };
 
-template <typename NodeType>
 struct AddNode : Operator {
   MaterialGraph *const graph;
   std::unique_ptr<MaterialNode> node = nullptr;
-  MaterialExecutionContext *exe_context;
+  const MaterialNodeDefinition *material_node_definition = nullptr;
   UUID node_uuid = 0;
-  AddNode(MaterialGraph *graph, MaterialExecutionContext *exe_context)
-      : Operator("MATERIAL_GRAPH_OP_ADD_NODE"), graph(graph), exe_context(exe_context){};
+
+  AddNode(MaterialGraph *const graph,
+          const MaterialNodeDefinition *material_node_definition)
+      : Operator("MATERIAL_GRAPH_OP_ADD_NODE", true),
+        graph(graph),
+        material_node_definition(material_node_definition) {}
 
   auto execute() -> void override {
-    auto l_node = std::make_unique<NodeType>(generate_uuid(), graph);
+    auto l_node = std::make_unique<MaterialNode>(generate_uuid(),
+                                                 material_node_definition);
     node_uuid = l_node->uuid;
     graph->add_node(std::move(l_node));
-    graph->get_node(node_uuid).initialize(exe_context);
-    graph->execute_forward(node_uuid);
   };
 
-  auto undo() -> void override {
-    auto flatten = graph->flatten(&graph->get_node(node_uuid));
-    node = graph->delete_node(node_uuid);
-    std::for_each(flatten.begin(), flatten.end(), [&](auto *node) {
-      if (node->uuid != node_uuid) {
-        node->execute();
-      }
-    });
-  };
+  auto undo() -> void override { node = graph->delete_node(node_uuid); };
 
-  auto redo() -> void override {
-    graph->add_node(std::move(node));
-    graph->execute_forward(node_uuid);
-  };
+  auto redo() -> void override { graph->add_node(std::move(node)); };
 };
 
 struct DeleteNode : Operator {

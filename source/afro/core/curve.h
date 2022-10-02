@@ -17,12 +17,12 @@ namespace afro::core::bezier {
  */
 struct ControlPoint {
   /**
-   * @brief P3 of the pervious point.
+   * @brief P3 of the previous point.
    *
    */
   FVec2 t1;
   /**
-   * @brief P4 of the pervious point and P1 of this curve.
+   * @brief P4 of the previous point and P1 of this curve.
    *
    */
   FVec2 pos;
@@ -39,7 +39,8 @@ struct ControlPoint {
  */
 struct BezierSpline {
   static constexpr float DEFAULT_ELISION = 1e-5F;
-  std::vector<ControlPoint> points = {{{0, 0}, {0, 0}, {0, 0}}, {{1, 1}, {1, 1}, {1, 1}}};
+  std::vector<ControlPoint> points = {{{0, 0}, {0, 0}, {0, 0}},
+                                      {{1, 1}, {1, 1}, {1, 1}}};
   /**
    * @brief Computes the y value of the curve at the given x value.
    *
@@ -64,7 +65,8 @@ struct BezierSpline {
    */
   [[nodiscard]] auto lut(int samples, bool clamp = true) -> std::vector<float>;
   /**
-   * @brief Inserts a control point at the given x value so as the curve's shape is not affected.
+   * @brief Inserts a control point at the given x value so as the curve's shape
+   * is not affected.
    *
    * @param x x coordinate to insert the new control point.
    * @see https://pomax.github.io/BezierInfo-2/#splitting
@@ -85,23 +87,28 @@ struct BezierSpline {
    * @param right the right control point.
    * @return float the t parameter of the curve at the given x value.
    */
-  [[nodiscard]] auto get_t(float x, const ControlPoint& left, const ControlPoint& right,
+  [[nodiscard]] auto get_t(float x, const ControlPoint& left,
+                           const ControlPoint& right,
                            float elision = DEFAULT_ELISION) const -> float;
   /**
-   * @brief Get the left and right control points of the curve at the given x value.
+   * @brief Get the left and right control points of the curve at the given x
+   * value.
    *
    * @param x x coordinate of the point.
    * @param left out the left control point.
    * @param right out the right control point.
    */
-  auto get_left_right(float x, ControlPoint** left, ControlPoint** right) -> void;
+  auto get_left_right(float x, ControlPoint** left, ControlPoint** right)
+      -> void;
   /**
-   * @brief Get the left and right control points of the curve at the given x value.
+   * @brief Get the left and right control points of the curve at the given x
+   * value.
    *
    * @param x x coordinate of the point.
    */
   auto get_left_right(float x) -> std::pair<ControlPoint, ControlPoint>;
-  [[nodiscard]] static auto evaluate_at_t(const ControlPoint& left, const ControlPoint& right, float t,
+  [[nodiscard]] static auto evaluate_at_t(const ControlPoint& left,
+                                          const ControlPoint& right, float t,
                                           bool clamp = true) -> FVec2;
 };
 

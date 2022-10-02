@@ -1,0 +1,16 @@
+target_sources(
+        afro
+        PUBLIC
+        context.cpp
+        data.cpp
+        image_texture.cpp
+        property.cpp
+        packed_file.cpp
+        uuid.cpp
+        folder.cpp
+        curve.cpp
+        material_nodes.cpp
+        material_engine.cpp
+        material_graph.cpp
+        material_processor.cpp
+        material_node_definition.cpp)

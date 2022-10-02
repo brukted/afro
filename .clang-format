@@ -1,6 +1,5 @@
 ---
 BasedOnStyle: Google
-ColumnLimit: 120
 IncludeBlocks: Regroup
 Standard: c++20
 

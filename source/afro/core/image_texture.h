@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <core/uuid.h>
 
 #include <cstdint>
 #include <optional>
@@ -16,14 +17,11 @@
 #include "core/image_texture.h"
 #include "packed_file.h"
 
-#include <core/uuid.h>
-
-
 namespace afro::core {
 
 /**
- * @brief Enumeration of image format. Can be casted to size_t to get the size of each pixel in
- * bytes.
+ * @brief Enumeration of image format. Can be casted to size_t to get the size
+ * of each pixel in bytes.
  *
  */
 enum class ImageTextureFormat : size_t {
@@ -46,7 +44,8 @@ struct ImageBuffer {
   const ImageTextureFormat format;
   const std::vector<uint8_t> bytes;
   ImageBuffer(ImageTextureFormat format, int width, int height);
-  ImageBuffer(ImageTextureFormat format, int width, int height, std::vector<uint8_t> bytes);
+  ImageBuffer(ImageTextureFormat format, int width, int height,
+              std::vector<uint8_t> bytes);
   ImageBuffer(ImageBuffer&& other) noexcept = default;
   ImageBuffer(const ImageBuffer& other) noexcept = default;
   auto operator=(ImageBuffer&& other) = delete;
@@ -64,7 +63,7 @@ struct ImageTexture {
   std::optional<std::string> file_path;
   ImageTexture(UUID uid, ImageTextureFormat format, int width, int height);
   ImageTexture(UUID uid, ImageBuffer buffer);
-  ImageTexture(ImageTexture&& other) noexcept;
+  ImageTexture(ImageTexture&& other) = default;
   auto operator=(ImageTexture&&) -> ImageTexture& = delete;
   auto operator=(ImageTexture&) -> ImageTexture = delete;
   ImageTexture(ImageTexture&) = delete;

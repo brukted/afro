@@ -17,6 +17,9 @@ template <typename T>
 struct Vec2 {
   T x;
   T y;
+
+  Vec2(T x = 0, T y = 0) : x(x), y(y) {}
+
   auto operator+(const Vec2<T>& b) const -> Vec2<T> {
     Vec2<T> vec;
     vec.x = x + b.x;
@@ -51,6 +54,9 @@ struct Vec3 {
   T x;
   T y;
   T z;
+
+  Vec3(T x = 0, T y = 0, T z = 0) : x(x), y(y), z(z) {}
+
   auto operator+(const Vec3<T>& b) const -> Vec3<T> {
     Vec3<T> vec;
     vec.x = x + b.x;
@@ -90,6 +96,9 @@ struct Vec4 {
   T y;
   T z;
   T w;
+
+  Vec4(T x = 0, T y = 0, T z = 0, T w = 0) : x(x), y(y), z(z), w(w) {}
+
   auto operator+(const Vec4<T>& b) const -> Vec4<T> {
     Vec4<T> vec;
     vec.x = x + b.x;
@@ -128,7 +137,11 @@ template <typename T>
 struct Range {
   T min;
   T max;
-  auto clamp(T& val) -> void { val = static_cast<T>(std::clamp(val, min, max)); };
+
+  Range(T min, T max) : min(min), max(max) {}
+  auto clamp(T& val) -> void {
+    val = static_cast<T>(std::clamp(val, min, max));
+  };
 };
 
 using RangeF = Range<float>;
@@ -138,7 +151,8 @@ using IVec4 = Vec4<int>;
 using FVec4 = Vec4<float>;
 
 /**
- * @brief Find all three complex roots of the cubic equation ax^3 + bx^2 + cx + d=0
+ * @brief Find all three complex roots of the cubic equation ax^3 + bx^2 + cx +
+ * d=0
  *
  * @param a ax^3
  * @param b bx^2
@@ -146,5 +160,6 @@ using FVec4 = Vec4<float>;
  * @param d d
  * @return std::array<double, 3> the three roots if they exist, otherwise an NaN
  */
-auto cubic_roots(double a, double b, double c, double d) -> std::array<double, 3>;
+auto cubic_roots(double a, double b, double c, double d)
+    -> std::array<double, 3>;
 }  // namespace afro

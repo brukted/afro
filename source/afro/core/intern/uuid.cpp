@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-#include "uuid.h"
+#include "core/uuid.h"
 
 #include <random>
 

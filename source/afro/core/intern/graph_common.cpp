@@ -4,6 +4,4 @@
  * found in the LICENSE file.
  */
 
-#include "data.h"
-
-namespace afro::core {}  // namespace afro::core
+#include "core/graph_common.h"

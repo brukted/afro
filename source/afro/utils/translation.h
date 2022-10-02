@@ -6,6 +6,8 @@
 
 #pragma once
 
+#define _(msg_id) msg_id
+
 namespace afro {
 
 template <typename type>
@@ -14,7 +16,8 @@ constexpr auto translate(const type text) -> const char* {
 };
 
 template <typename type>
-constexpr auto translate(const type text, const char* /*context*/) -> const char* {
+constexpr auto translate(const type text, const char* /*context*/) -> const
+    char* {
   return text;
 };
 

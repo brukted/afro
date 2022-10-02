@@ -1,26 +1,20 @@
 target_sources(
-  afro
-  PUBLIC context.h
-         context.cpp
-         data.h
-         data.cpp
-         function_graph.h
-         function_graph.cpp
-         material_graph.cpp
-         material_graph.h
-         graph_common.h
-         graph_common.cpp
-         image_texture.h
-         image_texture.cpp
-         property.h
-         property.cpp
-         packed_file.h
-         packed_file.cpp
-         uuid.h
-         uuid.cpp
-         folder.h
-         folder.cpp
-         material_nodes.h
-         material_nodes.cpp
-         curve.h
-         curve.cpp)
+        afro
+        PUBLIC
+        context.h
+        data.h
+        function_graph.h
+        material_graph.h
+        graph_common.h
+        image_texture.h
+        property.h packed_file.h
+        uuid.h
+        folder.h
+        material_nodes.h
+        curve.h
+        material_engine.h
+        material_processor.h
+        material_node_definition.h
+        engine_utils.h)
+
+add_subdirectory(intern)

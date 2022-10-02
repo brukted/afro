@@ -4,6 +4,6 @@
  * found in the LICENSE file.
  */
 
-#include "context.h"
+#include "core/function_graph.h"
 
-namespace afro::core {}
+namespace afro::core {}  // namespace afro::core

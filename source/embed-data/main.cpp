@@ -15,8 +15,6 @@
 #include <fstream>
 #include <iostream>
 #include <span>
-#include <string>
-#include <string_view>
 
 #include "fmt/core.h"
 
@@ -54,7 +52,9 @@ auto main(int argc, char *argv[]) -> int {
   }
   std::cout << fmt::format("Making source file for {}", in_file) << std::endl;
 
-  ofs << "#if defined(_MSC_VER)\n"
+  ofs << "// Generated file do not edit.\n"
+         "\n"
+         "#if defined(_MSC_VER)\n"
          "  #pragma warning(push )\n"
          "  #pragma warning(disable : 4309 )\n"
          "  #pragma warning(disable : 4838 )\n"
@@ -65,11 +65,6 @@ auto main(int argc, char *argv[]) -> int {
          "#endif\n\n";
 
   ofs << fmt::format("/* embed data of file {} */\n\n", in_file);
-
-  uintmax_t size_with_null_term = size;
-  if (*(args[3]) != '0') {
-    size_with_null_term = size + 1;
-  }
 
   ofs << fmt::format(
       "extern const int embed_data_{0}_size;\n"

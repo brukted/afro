@@ -45,11 +45,15 @@ EMBEDDED_DATA(droidsans_ttf)
 EMBEDDED_DATA(fa_solid_900_ttf)
 
 namespace afro::ui {
-UiContext::UiContext(core::Context *context) : main_window(nullptr, context), context(context){};
+UiContext::UiContext(core::Context *context)
+    : main_window(nullptr, context), context(context){};
 
-void GLAPIENTRY open_gl_log(gl::GLenum /*unused*/, gl::GLenum /*unused*/, gl::GLuint /*unused*/, gl::GLenum severity,
-                            gl::GLsizei /*unused*/, const gl::GLchar *msg, const void * /*unused*/) {
-  log::core_error("OpenGL error : severity {} : {}", static_cast<unsigned int>(severity), msg);
+void GLAPIENTRY open_gl_log(gl::GLenum /*unused*/, gl::GLenum /*unused*/,
+                            gl::GLuint /*unused*/, gl::GLenum severity,
+                            gl::GLsizei /*unused*/, const gl::GLchar *msg,
+                            const void * /*unused*/) {
+  log::core_error("OpenGL error : severity {} : {}",
+                  static_cast<unsigned int>(severity), msg);
 }
 
 auto UiContext::glfw_callback(int error, const char *description) -> void {
@@ -73,7 +77,7 @@ auto UiContext::init() -> void {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,
                  (int)(gl::GL_TRUE));  // Required on Mac
 #else
-  const char *glsl_version = "#version 130";
+  const char *glsl_version = "#version 150";
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);   // 3.2+
@@ -87,10 +91,12 @@ auto UiContext::init() -> void {
   log::core_trace("Created main GLFW window");
   glfwMakeContextCurrent(main_window.glfw_window);
   glfwSwapInterval(1);  // Enable vsync
+  log::core_trace("VSync Enabled");
 
   // Initialize OpenGL loader
   log::core_trace("Initializing OpenGL");
-  glbinding::initialize([](const char *name) { return glfwGetProcAddress(name); });
+  glbinding::initialize(
+      [](const char *name) { return glfwGetProcAddress(name); });
   log::core_trace("Initialized OpenGL");
 
 #ifndef NDEBUG
@@ -134,14 +140,16 @@ auto UiContext::init() -> void {
   // Load and merge the text font
   config.MergeMode = false;
   log::core_trace("Loading DroidSans from memory");
-  io.Fonts->AddFontFromMemoryTTF((void *)embed_data_droidsans_ttf, embed_data_droidsans_ttf_size, size_pixels, &config,
-                                 io.Fonts->GetGlyphRangesDefault());
+  io.Fonts->AddFontFromMemoryTTF((void *)embed_data_droidsans_ttf,
+                                 embed_data_droidsans_ttf_size, size_pixels,
+                                 &config, io.Fonts->GetGlyphRangesDefault());
   log::core_trace("Loaded DroidSans from memory");
   // Load and add the embedded icon font
   config.MergeMode = true;
   const auto icon_ranges = icon_code_points();
   log::core_trace("Loading icon font from memory");
-  io.Fonts->AddFontFromMemoryTTF((void *)embed_data_fa_solid_900_ttf, embed_data_fa_solid_900_ttf_size, size_pixels,
+  io.Fonts->AddFontFromMemoryTTF((void *)embed_data_fa_solid_900_ttf,
+                                 embed_data_fa_solid_900_ttf_size, size_pixels,
                                  &config, icon_ranges.data());
   log::core_trace("Loaded icon font from memory");
   log::core_trace("Building Fonts");
@@ -170,6 +178,7 @@ auto UiContext::deinit() const -> void {
 }
 
 auto UiContext::main_loop() -> void {
+  log::core_trace("Entering UI main loop");
   while (running) {
     if (glfwWindowShouldClose(main_window.glfw_window) != 0) {
       if (main_window.show_exit_dialog()) {
@@ -191,10 +200,12 @@ auto UiContext::main_loop() -> void {
   }
   log::core_trace("Destroying UI context");
   deinit();
+  log::core_trace("Exited UI main loop");
 }
 
 auto UiContext::draw() -> void {
-  static const ImVec4 clear_color = ImGui::GetStyle().Colors[ImGuiCol_::ImGuiCol_WindowBg];
+  static const ImVec4 clear_color =
+      ImGui::GetStyle().Colors[ImGuiCol_::ImGuiCol_WindowBg];
   glfwPollEvents();
   // Start the Dear ImGui frame
   ImGui_ImplOpenGL3_NewFrame();

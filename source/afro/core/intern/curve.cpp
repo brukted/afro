@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-#include "curve.h"
+#include "core/curve.h"
 
 #include <algorithm>
 #include <array>
@@ -27,7 +27,8 @@ auto BezierSpline::at(float x, bool clamp) -> float {
 }
 
 auto BezierSpline::sort() -> void {
-  std::sort(points.begin(), points.end(), [](auto &a, auto &b) { return a.pos.x < b.pos.x; });
+  std::sort(points.begin(), points.end(),
+            [](auto &a, auto &b) { return a.pos.x < b.pos.x; });
 }
 
 auto BezierSpline::lut(int samples, bool clamp) -> std::vector<float> {
@@ -47,17 +48,19 @@ auto BezierSpline::split_at(float x) -> void {
   get_left_right(x, &left_cp, &right_cp);
   // t parameter of the curve at x
   const auto t = get_t(x, *left_cp, *right_cp);
-  const auto f_points = std::vector<FVec2>{left_cp->pos, left_cp->t2, right_cp->t1, right_cp->pos};
+  const auto f_points = std::vector<FVec2>{left_cp->pos, left_cp->t2,
+                                           right_cp->t1, right_cp->pos};
 
   auto left = std::vector<FVec2>{};
   auto right = std::vector<FVec2>{};
-  std::function<void(std::vector<FVec2>, float)> curve_point = [&left, &right, &curve_point](std::vector<FVec2> points,
-                                                                                             float t) -> void {
+  std::function<void(std::vector<FVec2>, float)> curve_point =
+      [&left, &right, &curve_point](std::vector<FVec2> points,
+                                    float t) -> void {
     if (points.size() == 1) {
       left.push_back(points[0]);
       right.push_back(points[0]);
     } else {
-      auto new_points = std::vector<FVec2>(points.size() - 1);
+      auto new_points = std::vector<FVec2>((size_t)(points.size() - 1));
       for (size_t i = 0; i < new_points.size(); ++i) {
         if (i == 0) {
           left.push_back(points[i]);
@@ -79,29 +82,12 @@ auto BezierSpline::split_at(float x) -> void {
   sort();
 }
 
-auto BezierSpline::get_t(float x, const ControlPoint &left, const ControlPoint &right, float elision) const -> float {
+auto BezierSpline::get_t(float x, const ControlPoint &left,
+                         const ControlPoint &right, float elision) const
+    -> float {
   AF_ASSERT(x >= 0 && x <= 1)
-  /*
-  // P(t) = (1-t)^3 * P0 + 3(1-t)^2 * t * P1 + 3(1-t) * t^2 * P2 + t^3 * P3
-  // x(t) = (1-t)^3 * a + 3(1-t)^2 * t * b + 3(1-t) * t^2 * c + t^3 * d
-  // solve t such that (-a + 3b - 3c + d)t^3 + (3a - 6b + 3c)t^2 + (-3a + 3b)t + (a-x) = 0
-  const auto a = left.pos.x;   // P0.x
-  const auto b = left.t2.x;    // P1.x
-  const auto c = right.t1.x;   // P2.x
-  const auto d = right.pos.x;  // P3.x
-  // Cubic terms
-  const auto c_a = -a + (3 * b) - (3 * c) + d;
-  const auto c_b = (3 * a) - (6 * b) + (3 * c);
-  const auto c_c = (-3 * a) + (3 * b);
-  const auto c_d = a - x;
-  const auto roots = cubic_roots(c_a, c_b, c_c, c_d);
-  for (const auto &root : roots) {
-    if (root >= 0 && root <= 1) {
-      return (float)root;
-    }
-  }
-  return std::nan(""); */
-  // We use binary search to find the t value. Using Cubic roots has proved to be finicky.
+  // We use binary search to find the t value. Using Cubic roots has proved to
+  // be finicky.
   constexpr auto half = 0.5F;
   float lower = 0.0F;
   float upper = 1.0F;
@@ -123,7 +109,8 @@ auto BezierSpline::get_t(float x, const ControlPoint &left, const ControlPoint &
   return mid;
 }
 
-auto BezierSpline::get_left_right(float x, ControlPoint **left, ControlPoint **right) -> void {
+auto BezierSpline::get_left_right(float x, ControlPoint **left,
+                                  ControlPoint **right) -> void {
   AF_ASSERT(x >= 0 && x <= 1)
   *left = &points[0];
   *right = &points[points.size() - 1];
@@ -137,7 +124,8 @@ auto BezierSpline::get_left_right(float x, ControlPoint **left, ControlPoint **r
   }
 }
 
-auto BezierSpline::get_left_right(float x) -> std::pair<ControlPoint, ControlPoint> {
+auto BezierSpline::get_left_right(float x)
+    -> std::pair<ControlPoint, ControlPoint> {
   AF_ASSERT(x >= 0 && x <= 1)
   ControlPoint *left = nullptr;
   ControlPoint *right = nullptr;
@@ -146,7 +134,9 @@ auto BezierSpline::get_left_right(float x) -> std::pair<ControlPoint, ControlPoi
   return {*left, *right};
 }
 
-auto BezierSpline::evaluate_at_t(const ControlPoint &left, const ControlPoint &right, float t, bool clamp) -> FVec2 {
+auto BezierSpline::evaluate_at_t(const ControlPoint &left,
+                                 const ControlPoint &right, float t, bool clamp)
+    -> FVec2 {
   AF_ASSERT(t >= 0 && t <= 1)
   // clang-format off
   // P(t) = (1-t)^3 * P0 + 3(1-t)^2 * t * P1 + 3(1-t) * t^2 * P2 + t^3 * P3

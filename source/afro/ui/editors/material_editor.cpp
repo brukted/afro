@@ -27,10 +27,12 @@
 using namespace afro::core;
 
 namespace afro::ui {
-MaterialEditor::MaterialEditor(core::Context *af_context) : af_context(af_context) {}
+MaterialEditor::MaterialEditor(core::Context *af_context)
+    : af_context(af_context) {}
 
 auto MaterialEditor::draw(bool *p_open) -> void {
-  if (!(ImGui::Begin(translate("Material Editor"), p_open)) || graph == nullptr) {
+  if (!(ImGui::Begin(translate("Material Editor"), p_open)) ||
+      graph == nullptr) {
     ImGui::End();
     return;
   }
@@ -42,8 +44,9 @@ auto MaterialEditor::draw(bool *p_open) -> void {
   }
   // Draws links
   for (const auto &[uuid, link] : graph->links) {
-    ImNodes::Link(link_id_map.create_or_get_int(uuid), attr_id_map.create_or_get_int(link.from_socket),
-                  attr_id_map.create_or_get_int(link.to_socket));
+    ImNodes::Link(link_id_map.create_or_get_imnodes_id(uuid),
+                  attr_id_map.create_or_get_imnodes_id(link.from_socket),
+                  attr_id_map.create_or_get_imnodes_id(link.to_socket));
   }
   for (auto &[uuid, comment_node] : graph->comments) {
     draw_comment_node(*comment_node.get());
@@ -59,50 +62,62 @@ auto MaterialEditor::draw(bool *p_open) -> void {
 
 auto MaterialEditor::draw_node(core::MaterialNode *node) -> void {
   auto &style = ImNodes::GetStyle();
-  ImNodes::BeginNode(node_id_map.create_or_get_int(node->uuid));
+  ImNodes::BeginNode(node_id_map.create_or_get_imnodes_id(node->uuid));
   ImNodes::BeginNodeTitleBar();
-  ImGui::TextUnformatted(node->ui_name.data());
+  ImGui::TextUnformatted(node->definition->ui_name.data());
   ImNodes::EndNodeTitleBar();
+
+  // Draw input sockets
   for (auto &in : node->inputs) {
-    switch (in.type) {
+    switch (in.definition->type) {
       case MaterialSocketType::color:
         style.Colors[ImNodesCol_::ImNodesCol_Pin] = IM_COL32(255, 255, 0, 255);
         break;
       case MaterialSocketType::grayscale:
-        style.Colors[ImNodesCol_::ImNodesCol_Pin] = IM_COL32(128, 128, 128, 255);
+        style.Colors[ImNodesCol_::ImNodesCol_Pin] =
+            IM_COL32(128, 128, 128, 255);
         break;
       case MaterialSocketType::universal:
-        style.Colors[ImNodesCol_::ImNodesCol_Pin] = IM_COL32(255, 255, 255, 255);
+        style.Colors[ImNodesCol_::ImNodesCol_Pin] =
+            IM_COL32(255, 255, 255, 255);
 
         break;
     }
-    ImNodes::BeginInputAttribute(attr_id_map.create_or_get_int(in.uid));
-    ImGui::TextUnformatted(in.ui_name.data());
+    ImNodes::BeginInputAttribute(attr_id_map.create_or_get_imnodes_id(in.uid));
+    ImGui::TextUnformatted(in.definition->ui_name.data());
     ImNodes::EndInputAttribute();
   }
+
+  // Draw output sockets
   for (auto &out : node->outputs) {
-    switch (out.type) {
+    switch (out.definition->type) {
       case MaterialSocketType::color:
         style.Colors[ImNodesCol_::ImNodesCol_Pin] = IM_COL32(255, 255, 0, 255);
         break;
       case MaterialSocketType::grayscale:
-        style.Colors[ImNodesCol_::ImNodesCol_Pin] = IM_COL32(128, 128, 128, 255);
+        style.Colors[ImNodesCol_::ImNodesCol_Pin] =
+            IM_COL32(128, 128, 128, 255);
         break;
     }
-    ImNodes::BeginOutputAttribute(attr_id_map.create_or_get_int(out.uid));
-    ImGui::TextUnformatted(out.ui_name.data());
+    ImNodes::BeginOutputAttribute(
+        attr_id_map.create_or_get_imnodes_id(out.uid));
+    ImGui::TextUnformatted(out.definition->ui_name.data());
     ImNodes::EndOutputAttribute();
   }
+
+  // Draw preview
   gl::GLuint tex = 0;
   if (!node->outputs.empty()) {
-    if (node->outputs[0].cache_tex.has_value()) {
-      tex = node->outputs[0].cache_tex.value();
-    }
+    const auto output_socket_buffer =
+        materialEngineContext->get_buffer(node->uuid, node->outputs[0].uid);
+    tex = output_socket_buffer.texture_id;
   }
+
   if (tex != 0) {
     // TODO Make the size of the texture configurable
     uintptr_t ptr = tex;
-    ImGui::Image((ImTextureID)ptr, {ImGui::GetFontSize() * 7, ImGui::GetFontSize() * 7});
+    ImGui::Image((ImTextureID)ptr,
+                 {ImGui::GetFontSize() * 7, ImGui::GetFontSize() * 7});
   }
   ImNodes::EndNode();
   if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) {
@@ -111,7 +126,7 @@ auto MaterialEditor::draw_node(core::MaterialNode *node) -> void {
 }
 
 auto MaterialEditor::draw_comment_node(core::CommentNode &node) -> void {
-  ImNodes::BeginNode(node_id_map.create_or_get_int(node.uuid));
+  ImNodes::BeginNode(node_id_map.create_or_get_imnodes_id(node.uuid));
   ImGui::InputText("###comment", &node.comment);
   ImNodes::EndNode();
 }
@@ -120,28 +135,34 @@ auto MaterialEditor::open_graph(core::MaterialGraph *new_graph) -> void {
   if (graph != nullptr) {
     close_graph();
   }
-  if (!exe_context.has_value()) {
-    exe_context = MaterialExecutionContext();
-    exe_context.value().setup_proccesors();
+
+  if (materialEngineContext == nullptr) {
+    materialEngineContext =
+        std::make_unique<MaterialEngineContext>(&af_context->material_engine);
   }
+
   imnodes_context = ImNodes::EditorContextCreate();
   ImNodes::EditorContextSet(imnodes_context);
   graph = new_graph;
-  graph->init(&exe_context.value());
+  materialEngineContext->load_graph(graph);
+
   for (const auto &[uuid, node_ptr] : graph->nodes) {
-    ImNodes::SetNodeGridSpacePos(node_id_map.create_or_get_int(uuid),
-                                 {node_ptr->ui_info.x_pos, node_ptr->ui_info.y_pos});
+    ImNodes::SetNodeGridSpacePos(
+        node_id_map.create_or_get_imnodes_id(uuid),
+        {node_ptr->ui_info.x_pos, node_ptr->ui_info.y_pos});
   }
 }
 
 auto MaterialEditor::close_graph() -> void {
   ImNodes::EditorContextSet(imnodes_context);
   for (const auto &[uuid, node_ptr] : graph->nodes) {
-    const auto node_pos = ImNodes::GetNodeGridSpacePos(node_id_map.get_int(uuid));
+    const auto node_pos =
+        ImNodes::GetNodeGridSpacePos(node_id_map.get_imnodes_id(uuid));
     node_ptr->ui_info.x_pos = node_pos.x;
     node_ptr->ui_info.y_pos = node_pos.y;
   }
-  graph->deinit();
+  materialEngineContext->unload_graph();
+
   graph = nullptr;
   ImNodes::EditorContextFree(imnodes_context);
   node_id_map.reset();
@@ -152,17 +173,20 @@ auto MaterialEditor::close_graph() -> void {
 auto MaterialEditor::main_context_menu() -> void {
   // const auto mouse_pos = ImGui::GetMousePos();
   int hovered_node = 0;
-  if (ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows) && ImGui::IsMouseDown(ImGuiMouseButton_Right) &&
+  if (ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows) &&
+      ImGui::IsMouseDown(ImGuiMouseButton_Right) &&
       !ImNodes::IsNodeHovered(&hovered_node)) {
     ImGui::OpenPopup("main_context_menu");
   }
   if (ImGui::BeginPopup("main_context_menu")) {
     if (ImGui::BeginMenu(translate("Add node"))) {
-      prop_add_node_op<material_nodes::BlendNode>(translate("Blend"), Icon::BLEND_NODE);
-      prop_add_node_op<material_nodes::BlurNode>(translate("Blur"), Icon::BLUR_NODE);
-      prop_add_node_op<material_nodes::ChannelSelectNode>(translate("Channel Select"), Icon::CHANNELS_SHUFFLE_NODE);
-      prop_add_node_op<material_nodes::TextNode>(translate("Text"), Icon::TEXT_NODE);
-      prop_add_node_op<material_nodes::UniformColorNode>(translate("Uniform Color"), Icon::UNIFORM_COLOR_NODE);
+      if (material_nodes::node_definitions.empty())
+        log::core_warn("Empty Node Definitions");
+
+      for (const auto &material_node_definition :
+           material_nodes::node_definitions) {
+        prop_add_node_op(material_node_definition);
+      }
       ImGui::EndMenu();
     }
     ImGui::EndPopup();
@@ -176,7 +200,8 @@ auto MaterialEditor::check_for_new_links() -> void {
   int to_socket = 0;
   if (ImNodes::IsLinkCreated(&from_node, &from_socket, &to_node, &to_socket)) {
     af_context->queue_operation<CreateMaterialGraphLink>(
-        graph, node_id_map.get_uuid(from_node), attr_id_map.get_uuid(from_socket), node_id_map.get_uuid(to_node),
+        graph, node_id_map.get_uuid(from_node),
+        attr_id_map.get_uuid(from_socket), node_id_map.get_uuid(to_node),
         attr_id_map.get_uuid(to_socket));
   }
 }
@@ -186,13 +211,15 @@ auto MaterialEditor::check_for_deleted_links() -> void {
   auto selected_links = std::vector<int>(ImNodes::NumSelectedLinks());
   if (!selected_links.empty() && ImGui::IsKeyPressed(GLFW_KEY_DELETE)) {
     for (const auto link_id : selected_links) {
-      af_context->queue_operation<DeleteMaterialGraphLink>(graph, link_id_map.get_uuid(link_id));
+      af_context->queue_operation<DeleteMaterialGraphLink>(
+          graph, link_id_map.get_uuid(link_id));
     }
     ImNodes::ClearLinkSelection();
   }
   int link_id = 0;
   if (ImNodes::IsLinkDestroyed(&link_id)) {
-    af_context->queue_operation<DeleteMaterialGraphLink>(graph, link_id_map.get_uuid(link_id));
+    af_context->queue_operation<DeleteMaterialGraphLink>(
+        graph, link_id_map.get_uuid(link_id));
   }
 }
 
@@ -203,13 +230,16 @@ auto MaterialEditor::check_for_deleted_nodes() -> void {
   }
   ImNodes::GetSelectedNodes(sel_nodes.data());
   for (const auto node_id : sel_nodes) {
-    af_context->queue_operation<DeleteNode>(graph, node_id_map.get_uuid(node_id));
+    af_context->queue_operation<DeleteNode>(graph,
+                                            node_id_map.get_uuid(node_id));
   }
 }
 
-template <typename NodeType>
-auto MaterialEditor::prop_add_node_op(const std::string_view name, const Icon icon) -> void {
-  if (draw_operator<AddNode<NodeType>>(name, af_context, icon, graph, &exe_context.value())) {
+auto MaterialEditor::prop_add_node_op(
+    const MaterialNodeDefinition &material_node_definition) const -> void {
+  if (draw_operator<AddNode>(material_node_definition.ui_name, af_context,
+                             material_node_definition.icon, graph,
+                             &material_node_definition)) {
     ImGui::CloseCurrentPopup();
   }
 }

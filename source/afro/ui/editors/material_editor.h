@@ -18,6 +18,7 @@ namespace afro::core {
 struct MaterialGraph;
 struct Context;
 struct MaterialNode;
+class MaterialEngineContext;
 }  // namespace afro::core
 
 namespace afro::ui {
@@ -39,9 +40,9 @@ struct MaterialEditor {
     std::unordered_map<int, core::UUID> map2;
 
    public:
-    inline auto get_uuid(int i) { return map2.at(i); };
-    inline auto get_int(core::UUID i) { return map1.at(i); };
-    inline auto create_or_get_int(core::UUID uuid) {
+    inline auto get_uuid(int imnodes_id) { return map2.at(imnodes_id); };
+    inline auto get_imnodes_id(core::UUID uuid) { return map1.at(uuid); };
+    inline auto create_or_get_imnodes_id(core::UUID uuid) {
       if (map1.contains(uuid)) {
         return map1.at(uuid);
       }
@@ -56,12 +57,13 @@ struct MaterialEditor {
     };
   };
 
+  std::unique_ptr<core::MaterialEngineContext> materialEngineContext;
+
   core::MaterialGraph *graph = nullptr;
   ImNodesEditorContext *imnodes_context = nullptr;
-  std::optional<core::MaterialExecutionContext> exe_context;
   // Pointer to afro's context
   core::Context *af_context;
-  // Bimaps of UUID and imnodes' int ids
+  // Bidirectional maps of UUID and imnodes' int ids
   IDMap node_id_map;
   IDMap link_id_map;
   IDMap attr_id_map;
@@ -79,8 +81,9 @@ struct MaterialEditor {
   auto check_for_new_links() -> void;
   auto check_for_deleted_links() -> void;
   auto check_for_deleted_nodes() -> void;
-  template <typename NodeType>
-  auto prop_add_node_op(std::string_view name, Icon icon) -> void;
+  auto prop_add_node_op(
+      const core::MaterialNodeDefinition &material_node_definition) const
+      -> void;
 };
 
 }  // namespace afro::ui

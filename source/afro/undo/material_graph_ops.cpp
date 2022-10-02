@@ -22,8 +22,8 @@
 #include "utils/log.h"
 #include "utils/translation.h"
 
-// TODO I am not sure if implementations this much functionality inside operators try refactoring
-// into material_graph
+// TODO I am not sure if implementations this much functionality inside
+// operators try refactoring into material_graph
 
 namespace afro::core {
 AddNewMaterialGraph::AddNewMaterialGraph(Context *context, Folder *folder)
@@ -38,7 +38,8 @@ auto AddNewMaterialGraph::execute() -> void {
 }
 
 auto AddNewMaterialGraph::undo() -> void {
-  auto pos = std::remove_if(std::begin(context->data.material_graphs), std::end(context->data.material_graphs),
+  auto pos = std::remove_if(std::begin(context->data.material_graphs),
+                            std::end(context->data.material_graphs),
                             [&](auto &val) { return val->uuid == graph_uid; });
   if (pos != std::end(context->data.material_graphs)) {
     graph_ptr = std::move(*pos);
@@ -68,13 +69,18 @@ auto AddNewMaterialGraph::draw() -> OperatorResult {
   return result;
 }
 
-DeleteMaterialGraph::DeleteMaterialGraph(Context *context, Folder *folder, UUID graph_uid)
-    : Operator("MATERIAL_GRAPH_OP_DELETE"), context(context), folder(folder), graph_uid(graph_uid) {}
+DeleteMaterialGraph::DeleteMaterialGraph(Context *context, Folder *folder,
+                                         UUID graph_uid)
+    : Operator("MATERIAL_GRAPH_OP_DELETE"),
+      context(context),
+      folder(folder),
+      graph_uid(graph_uid) {}
 
 auto DeleteMaterialGraph::execute() -> void {
   auto &mat_graphs = context->data.material_graphs;
-  auto pos = std::remove_if(std::begin(mat_graphs), std::end(mat_graphs),
-                            [this](auto &val) { return val->uuid == graph_uid; });
+  auto pos =
+      std::remove_if(std::begin(mat_graphs), std::end(mat_graphs),
+                     [this](auto &val) { return val->uuid == graph_uid; });
   if (pos != std::end(mat_graphs)) {
     graph = std::move(*pos);
     try {
@@ -95,7 +101,9 @@ auto DeleteMaterialGraph::undo() -> void {
 
 auto DeleteMaterialGraph::redo() -> void { execute(); }
 
-CreateMaterialGraphLink::CreateMaterialGraphLink(MaterialGraph *graph, UUID from_node, UUID from_socket, UUID to_node,
+CreateMaterialGraphLink::CreateMaterialGraphLink(MaterialGraph *graph,
+                                                 UUID from_node,
+                                                 UUID from_socket, UUID to_node,
                                                  UUID to_socket)
     : Operator("MATERIAL_GRAPH_OP_CREATE_LK"),
       graph(graph),
@@ -107,12 +115,12 @@ CreateMaterialGraphLink::CreateMaterialGraphLink(MaterialGraph *graph, UUID from
 auto CreateMaterialGraphLink::execute() -> void {
   const auto &node = graph->get_node(to_node);
   const auto dest_socket =
-      std::find_if(node.inputs.begin(), node.inputs.end(), [&](auto &val) { return val.uid == to_socket; });
+      std::find_if(node.inputs.begin(), node.inputs.end(),
+                   [&](auto &val) { return val.uid == to_socket; });
   if (dest_socket->link_uuid.has_value()) {
     preexisting_link = graph->delete_link(dest_socket->link_uuid.value());
   }
   link_uid = graph->create_link(from_node, from_socket, to_node, to_socket);
-  graph->execute_forward(to_node);
 }
 
 auto CreateMaterialGraphLink::undo() -> void {
@@ -120,7 +128,6 @@ auto CreateMaterialGraphLink::undo() -> void {
   if (preexisting_link.has_value()) {
     graph->add_link(preexisting_link.value());
   }
-  graph->execute_forward(to_node);
 }
 
 auto CreateMaterialGraphLink::redo() -> void {
@@ -128,26 +135,26 @@ auto CreateMaterialGraphLink::redo() -> void {
     graph->delete_link(preexisting_link.value().uuid);
   }
   graph->add_link(link);
-  graph->execute_forward(to_node);
 }
 
-DeleteMaterialGraphLink::DeleteMaterialGraphLink(MaterialGraph *graph, UUID link_uid)
-    : Operator("MATERIAL_GRAPH_OP_DELETE_LK"), graph(graph), link_uid(link_uid) {}
+DeleteMaterialGraphLink::DeleteMaterialGraphLink(MaterialGraph *graph,
+                                                 UUID link_uid)
+    : Operator("MATERIAL_GRAPH_OP_DELETE_LK"),
+      graph(graph),
+      link_uid(link_uid) {}
 
 auto DeleteMaterialGraphLink::execute() -> void {
   link = graph->delete_link(link_uid);
-  graph->execute_forward(link.to_node);
 }
 
-auto DeleteMaterialGraphLink::undo() -> void {
-  graph->add_link(link);
-  graph->execute_forward(link.to_node);
-}
+auto DeleteMaterialGraphLink::undo() -> void { graph->add_link(link); }
 
 auto DeleteMaterialGraphLink::redo() -> void { execute(); }
 
 DeleteNode::DeleteNode(MaterialGraph *graph, UUID node_uid)
-    : Operator("MATERIAL_GRAPH_OP_DELETE_NODE"), graph(graph), node_uid(node_uid) {}
+    : Operator("MATERIAL_GRAPH_OP_DELETE_NODE"),
+      graph(graph),
+      node_uid(node_uid) {}
 
 auto DeleteNode::execute() -> void {
   // Delete all links connected to this node
@@ -167,22 +174,16 @@ auto DeleteNode::execute() -> void {
 
   // Delete the node
   node = graph->delete_node(node_uid);
-
-  // Update all nodes connected to this node
-  auto flattened = graph->flatten(node.get());
-  auto it = std::remove_if(flattened.begin(), flattened.end(), [&](auto &val) { return val->uuid == node_uid; });
-  //AF_ASSERT((it.size() == 1))
-  flattened.erase(it);
-  std::for_each(flattened.begin(), flattened.end(), [&](auto &val) { val->execute(); });
 }
 auto DeleteNode::undo() -> void {
   graph->add_node(std::move(node));
-  std::for_each(links.begin(), links.end(), [&](const auto &link) { graph->add_link(link); });
-  graph->execute_forward(node_uid);
+  std::for_each(links.begin(), links.end(),
+                [&](const auto &link) { graph->add_link(link); });
 }
 auto DeleteNode::redo() -> void { execute(); }
 
-OpenMaterialGraph::OpenMaterialGraph(core::Context *const context, core::MaterialGraph *const graph)
+OpenMaterialGraph::OpenMaterialGraph(core::Context *const context,
+                                     core::MaterialGraph *const graph)
     : Operator("MATERIAL_GRAPH_OP_OPEN"), context(context), graph(graph) {}
 
 auto OpenMaterialGraph::execute() -> void {

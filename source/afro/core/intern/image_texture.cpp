@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-#include "image_texture.h"
+#include "core/image_texture.h"
 
 #include <string_view>
 #include <utility>
@@ -20,11 +20,14 @@ ImageBuffer::ImageBuffer(ImageTextureFormat format, int width, int height,
                          std::vector<uint8_t> bytes)
     : width(width), height(height), format(format), bytes(std::move(bytes)) {}
 
-ImageTexture::ImageTexture(UUID uid, ImageTextureFormat format, int width, int height)
+ImageTexture::ImageTexture(UUID uid, ImageTextureFormat format, int width,
+                           int height)
     : uid(uid), buffer(ImageBuffer(format, width, height)) {}
 
-ImageTexture::ImageTexture(UUID uid, ImageBuffer buffer) : uid(uid), buffer(std::move(buffer)) {}
+ImageTexture::ImageTexture(UUID uid, ImageBuffer buffer)
+    : uid(uid), buffer(std::move(buffer)) {}
 
-// auto ImageTexture::create_from_file(std::string_view /**path**/) -> ImageTexture {}
+// auto ImageTexture::create_from_file(std::string_view /**path**/) ->
+// ImageTexture {}
 
 }  // namespace afro::core

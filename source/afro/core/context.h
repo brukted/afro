@@ -9,6 +9,7 @@
 #include <queue>
 
 #include "data.h"
+#include "material_engine.h"
 #include "ui/ui_main.h"
 #include "undo/undo.h"
 
@@ -22,14 +23,20 @@ struct Context {
   ui::UiContext ui_context{this};
   Data data{};
   UndoStack undo_stack;
+  MaterialEngine material_engine;
+
   // Queue of commands to be executed.
   std::queue<std::unique_ptr<Operator>> operator_queue;
   int next_undo_depth = 0;
   int next_redo_depth = 0;
+
   template <typename T, typename... Args>
   auto queue_operation(Args... args) -> void {
     operator_queue.push(std::make_unique<T>(args...));
   }
+
+  void init();
+  void deinit();
 };
 
 }  // namespace afro::core
