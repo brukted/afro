@@ -10,7 +10,7 @@
 #include <glbinding/gl43core/gl.h>
 #include <imgui.h>
 #include <imgui_stdlib.h>
-#include <imnodes.h>
+#include "imnodes/imnodes.h"
 
 #include <cstddef>
 #include <memory>
@@ -209,7 +209,7 @@ auto MaterialEditor::check_for_new_links() -> void {
 auto MaterialEditor::check_for_deleted_links() -> void {
   // TODO delete the selected links too
   auto selected_links = std::vector<int>(ImNodes::NumSelectedLinks());
-  if (!selected_links.empty() && ImGui::IsKeyPressed(GLFW_KEY_DELETE)) {
+  if (!selected_links.empty() && ImGui::IsKeyPressed(ImGuiKey_Delete)) {
     for (const auto link_id : selected_links) {
       af_context->queue_operation<DeleteMaterialGraphLink>(
           graph, link_id_map.get_uuid(link_id));
@@ -225,7 +225,7 @@ auto MaterialEditor::check_for_deleted_links() -> void {
 
 auto MaterialEditor::check_for_deleted_nodes() -> void {
   auto sel_nodes = std::vector<int>(ImNodes::NumSelectedNodes(), 0);
-  if (sel_nodes.empty() || !ImGui::IsKeyPressed(GLFW_KEY_DELETE)) {
+  if (sel_nodes.empty() || !ImGui::IsKeyPressed(ImGuiKey_Delete)) {
     return;
   }
   ImNodes::GetSelectedNodes(sel_nodes.data());

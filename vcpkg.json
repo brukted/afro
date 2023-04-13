@@ -1,5 +1,4 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
   "name": "afro",
   "version-string": "0.1.0",
   "dependencies": [
@@ -11,7 +10,6 @@
     "glm",
     {
       "name": "imgui",
-      "default-features": false,
       "features": [
         "opengl3-binding",
         "glfw-binding",
@@ -25,8 +23,6 @@
       ]
     },
     "nativefiledialog",
-    "cereal",
-    "assimp",
-    "imnodes"
+    "cereal"
   ]
 }

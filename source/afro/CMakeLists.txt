@@ -7,7 +7,6 @@ find_package(fmt CONFIG REQUIRED)
 find_package(glbinding CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
-find_package(imnodes CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(OpenImageIO CONFIG REQUIRED)
 find_package(unofficial-nativefiledialog CONFIG REQUIRED)
@@ -51,6 +50,7 @@ add_subdirectory(render)
 add_subdirectory(ui)
 add_subdirectory(undo)
 add_subdirectory(utils)
+add_subdirectory(imnodes)
 
 #
 # Include directories
@@ -74,7 +74,6 @@ target_link_libraries(
         glbinding::glbinding
         glfw
         imgui::imgui
-        unofficial::imnodesimnodes
         OpenImageIO::OpenImageIO
         OpenImageIO::OpenImageIO_Util
         unofficial::nativefiledialog::nfd
