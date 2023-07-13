@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <functional>
 #include <stdexcept>
 #include <string_view>
 
@@ -20,9 +21,18 @@ class OperatorError : public std::runtime_error {
 
 struct Operator {
   const std::string_view id_name;
+  const std::function<void()> on_execute;
+  const std::function<void()> on_undo;
+  const std::function<void()> on_redo;
   // Indicates whether the state before the operation can be recovered
   const bool can_undo;
-  Operator(std::string_view id_name, bool can_undo = false);
+
+  Operator(
+      std::string_view id_name, bool can_undo = false,
+      std::function<void()> on_execute = []() -> void {},
+      std::function<void()> on_undo = []() -> void {},
+      std::function<void()> on_redo = []() -> void {});
+
   virtual auto execute() -> void = 0;
   virtual auto undo() -> void = 0;
   virtual auto redo() -> void = 0;

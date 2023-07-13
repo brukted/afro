@@ -8,6 +8,7 @@
     "glfw3",
     "glbinding",
     "glm",
+    "fruit",
     {
       "name": "imgui",
       "features": [

@@ -79,9 +79,14 @@ struct AddNode : Operator {
   const MaterialNodeDefinition *material_node_definition = nullptr;
   UUID node_uuid = 0;
 
-  AddNode(MaterialGraph *const graph,
-          const MaterialNodeDefinition *material_node_definition)
-      : Operator("MATERIAL_GRAPH_OP_ADD_NODE", true),
+  AddNode(
+      MaterialGraph *const graph,
+      const MaterialNodeDefinition *material_node_definition,
+      std::function<void()> on_execute = []() -> void {},
+      std::function<void()> on_undo = []() -> void {},
+      std::function<void()> on_redo = []() -> void {})
+      : Operator("MATERIAL_GRAPH_OP_ADD_NODE", true, on_execute, on_undo,
+                 on_redo),
         graph(graph),
         material_node_definition(material_node_definition) {}
 
@@ -90,11 +95,18 @@ struct AddNode : Operator {
                                                  material_node_definition);
     node_uuid = l_node->uuid;
     graph->add_node(std::move(l_node));
+    on_execute();
   };
 
-  auto undo() -> void override { node = graph->delete_node(node_uuid); };
+  auto undo() -> void override {
+    node = graph->delete_node(node_uuid);
+    on_undo();
+  };
 
-  auto redo() -> void override { graph->add_node(std::move(node)); };
+  auto redo() -> void override {
+    graph->add_node(std::move(node));
+    on_redo();
+  };
 };
 
 struct DeleteNode : Operator {
