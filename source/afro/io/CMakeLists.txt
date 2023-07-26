@@ -1,1 +1,5 @@
-target_sources(afro PUBLIC image.h image.cpp)
+add_subdirectory(commands)
+add_subdirectory(data)
+add_subdirectory(di)
+add_subdirectory(interfaces)
+add_subdirectory(ui)
