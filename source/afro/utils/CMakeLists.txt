@@ -1,6 +1,6 @@
 target_sources(
   afro
-  PRIVATE asset.h
+  PRIVATE assert.h
           log.h
           log.cpp
           paths.h
