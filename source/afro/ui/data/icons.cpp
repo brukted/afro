@@ -10,24 +10,26 @@
 #include <string>
 #include <unordered_map>
 
-#include "icons_font_awesome_5.h"
 #include "imgui.h"
+#include "ui/utils/icons_font_awesome_5.h"
 #include "utils/log.h"
 namespace afro::ui {
 
-const std::unordered_map<Icon, std::string> ICON_MAP = {{Icon::NONE, ""},
-                                                        {Icon::MISSING, ICON_FA_IMAGE},
-                                                        {Icon::FOLDER, ICON_FA_FOLDER},
-                                                        {Icon::MATERIAL_GRAPH, ICON_FA_PROJECT_DIAGRAM},
-                                                        {Icon::IMAGE_TEXTURE, ICON_FA_IMAGE},
-                                                        {Icon::TEXT_NODE, ICON_FA_FONT}};
+const std::unordered_map<Icon, std::string> ICON_MAP = {
+    {Icon::NONE, ""},
+    {Icon::MISSING, ICON_FA_IMAGE},
+    {Icon::FOLDER, ICON_FA_FOLDER},
+    {Icon::MATERIAL_GRAPH, ICON_FA_PROJECT_DIAGRAM},
+    {Icon::IMAGE_TEXTURE, ICON_FA_IMAGE},
+    {Icon::TEXT_NODE, ICON_FA_FONT}};
 
 auto icon_code_point(Icon icon) noexcept -> const char* {
   try {
     return ICON_MAP.at(icon).c_str();
 
   } catch (const std::out_of_range&) {
-    log::core_warn("icon code point missing for icon : {}", static_cast<int>(icon));
+    log::core_warn("icon code point missing for icon : {}",
+                   static_cast<int>(icon));
     return ICON_MAP.at(Icon::MISSING).c_str();
   }
 }
