@@ -1,25 +1,29 @@
-#include "core/context.h"
-#include "utils/constants.h"
-#include "utils/log.h"
-#include "utils/paths.h"
-#include "utils/preferences.h"
+#include <fruit/fruit.h>
 
+#include <memory>
+
+#include "store/di.h"
+#include "ui/di.h"
+#include "utils/log.h"
+
+using namespace std;
 using namespace afro;
-namespace fs = std::filesystem;
 
 auto main() -> int {
   log::init_log(log::get_logger(), log::LogLevel::trace);
-  log::core_trace("Creating context");
-  core::Context ctx;
-  log::core_trace("Context created");
-  ctx.init();
-  const auto preferences_path =
-      (paths::config_dir() / preferences_file_name).string();
-  log::core_trace("Loading preferences from {}", preferences_path);
-  Preferences::get().load_from_file(preferences_path);
-  log::core_trace("Preferences loaded");
 
-  ctx.ui_context.main_loop();
-  ctx.deinit();
+  fruit::Injector<ui::Window> injector(ui::getUiComponent);
+  auto mainWindow = injector.get<ui::Window*>();
+  mainWindow->startup();
+
+  fruit::Injector<store::Data, store::Outliner> storeInjector(
+      store::getStoreComponent);
+  mainWindow->add_widget(storeInjector.get<shared_ptr<store::Outliner>>());
+
+  while (mainWindow->draw()) {
+    // execute operators
+  }
+
+  mainWindow->shutdown();
   return 0;
 }
