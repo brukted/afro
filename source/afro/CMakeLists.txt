@@ -12,6 +12,8 @@ find_package(OpenImageIO CONFIG REQUIRED)
 find_package(unofficial-nativefiledialog CONFIG REQUIRED)
 find_package(cereal CONFIG REQUIRED)
 find_package(PNG REQUIRED)
+find_package(Boost REQUIRED)
+find_package(Fruit REQUIRED)
 
 #
 # Resources
@@ -45,40 +47,43 @@ set_target_properties(afro PROPERTIES ${DEFAULT_PROJECT_OPTIONS})
 # Sub directories
 
 add_subdirectory(core)
+add_subdirectory(imnodes)
 add_subdirectory(io)
 add_subdirectory(render)
 add_subdirectory(ui)
 add_subdirectory(undo)
 add_subdirectory(utils)
-add_subdirectory(imnodes)
 
 #
 # Include directories
 #
 
 target_include_directories(
-        afro PRIVATE ${DEFAULT_INCLUDE_DIRECTORIES} ${CMAKE_CURRENT_BINARY_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR})
+  afro PRIVATE ${DEFAULT_INCLUDE_DIRECTORIES} ${CMAKE_CURRENT_BINARY_DIR}
+               ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_include_directories(afro PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(
+  afro PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${Boost_INCLUDE_DIRS}
+              ${FRUIT_INCLUDE_DIRS})
 
 #
 # Libraries
 #
 
 target_link_libraries(
-        afro
-        PUBLIC ${DEFAULT_LIBRARIES}
-        spdlog::spdlog_header_only
-        fmt::fmt-header-only
-        glbinding::glbinding
-        glfw
-        imgui::imgui
-        OpenImageIO::OpenImageIO
-        OpenImageIO::OpenImageIO_Util
-        unofficial::nativefiledialog::nfd
-        glm::glm
-        cereal::cereal)
+  afro
+  PUBLIC ${DEFAULT_LIBRARIES}
+         spdlog::spdlog_header_only
+         fmt::fmt-header-only
+         glbinding::glbinding
+         glfw
+         imgui::imgui
+         OpenImageIO::OpenImageIO
+         OpenImageIO::OpenImageIO_Util
+         unofficial::nativefiledialog::nfd
+         glm::glm
+         cereal::cereal
+         ${FRUIT_LIBRARY})
 
 #
 # Compile definitions

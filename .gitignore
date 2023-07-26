@@ -600,3 +600,5 @@ FodyWeavers.xsd
 # Additional files built by Visual Studio
 CMakeSettings.json
 /vcpkg-export/
+
+*.DS_Store
