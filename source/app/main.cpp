@@ -2,8 +2,7 @@
 
 #include <memory>
 
-#include "store/di.h"
-#include "ui/di.h"
+#include "di.h"
 #include "utils/log.h"
 
 using namespace std;
@@ -12,18 +11,20 @@ using namespace afro;
 auto main() -> int {
   log::init_log(log::get_logger(), log::LogLevel::trace);
 
-  fruit::Injector<ui::Window> injector(ui::getUiComponent);
-  auto mainWindow = injector.get<ui::Window*>();
-  mainWindow->startup();
+  fruit::Injector<undo::UndoStack, undo::DebugWindow, store::Data,
+                  store::Outliner, ui::Window>
+      injector(get_root_component);
 
-  fruit::Injector<store::Data, store::Outliner> storeInjector(
-      store::getStoreComponent);
-  mainWindow->add_widget(storeInjector.get<shared_ptr<store::Outliner>>());
+  auto* main_window = injector.get<ui::Window*>();
 
-  while (mainWindow->draw()) {
+  // setup window
+  main_window->startup();
+  main_window->add_widget(injector.get<shared_ptr<store::Outliner>>());
+
+  while (main_window->draw()) {
     // execute operators
   }
 
-  mainWindow->shutdown();
+  main_window->shutdown();
   return 0;
 }

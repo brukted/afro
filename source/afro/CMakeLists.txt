@@ -36,7 +36,7 @@ embed_data_text("../../resources/shaders/material/channel_select.frag" rc)
 #
 
 # Build library
-add_library(afro STATIC ${rc})
+add_library(afro STATIC ${rc} di.h)
 
 #
 # Project options
@@ -64,31 +64,31 @@ add_subdirectory(utils)
 #
 
 target_include_directories(
-  afro PRIVATE ${DEFAULT_INCLUDE_DIRECTORIES} ${CMAKE_CURRENT_BINARY_DIR}
-               ${CMAKE_CURRENT_SOURCE_DIR})
+        afro PRIVATE ${DEFAULT_INCLUDE_DIRECTORIES} ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_include_directories(
-  afro PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${Boost_INCLUDE_DIRS}
-              ${FRUIT_INCLUDE_DIRs})
+        afro PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${Boost_INCLUDE_DIRS}
+        ${FRUIT_INCLUDE_DIRs})
 
 #
 # Libraries
 #
 
 target_link_libraries(
-  afro
-  PUBLIC ${DEFAULT_LIBRARIES}
-         spdlog::spdlog_header_only
-         fmt::fmt-header-only
-         glbinding::glbinding
-         glfw
-         imgui::imgui
-         OpenImageIO::OpenImageIO
-         OpenImageIO::OpenImageIO_Util
-         unofficial::nativefiledialog::nfd
-         glm::glm
-         cereal::cereal
-         ${FRUIT_LIBRARY})
+        afro
+        PUBLIC ${DEFAULT_LIBRARIES}
+        spdlog::spdlog_header_only
+        fmt::fmt-header-only
+        glbinding::glbinding
+        glfw
+        imgui::imgui
+        OpenImageIO::OpenImageIO
+        OpenImageIO::OpenImageIO_Util
+        unofficial::nativefiledialog::nfd
+        glm::glm
+        cereal::cereal
+        ${FRUIT_LIBRARY})
 
 #
 # Compile definitions
