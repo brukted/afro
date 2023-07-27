@@ -9,7 +9,6 @@ namespace afro::store {
 class Outliner : public ui::Widget {
  private:
   Data *data;
-  bool show = true;
   auto main_context_menu() -> void;
 
  public:
