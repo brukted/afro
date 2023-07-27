@@ -2,7 +2,7 @@
 # set(ENV{FRUIT_INSTALLED_DIR} "/path/to/fruit/build")
 
 find_path(
-  FRUIT_INCLUDE_DIRS fruit.h
+  FRUIT_INCLUDE_DIR fruit.h
   HINTS (${FRUIT_INSTALLED_DIR} /usr /usr/local)
   PATH_SUFFIXES include/fruit)
 

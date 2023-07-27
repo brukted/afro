@@ -48,6 +48,7 @@ set_target_properties(afro PROPERTIES ${DEFAULT_PROJECT_OPTIONS})
 
 add_subdirectory(core)
 add_subdirectory(imnodes)
+add_subdirectory(ui)
 add_subdirectory(io)
 add_subdirectory(material_graph)
 add_subdirectory(math_graph)
@@ -55,7 +56,6 @@ add_subdirectory(preview)
 add_subdirectory(property)
 add_subdirectory(render)
 add_subdirectory(store)
-add_subdirectory(ui)
 add_subdirectory(undo)
 add_subdirectory(utils)
 
@@ -69,7 +69,7 @@ target_include_directories(
 
 target_include_directories(
   afro PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${Boost_INCLUDE_DIRS}
-              ${FRUIT_INCLUDE_DIRS})
+              ${FRUIT_INCLUDE_DIRs})
 
 #
 # Libraries
