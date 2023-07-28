@@ -27,7 +27,7 @@ auto Outliner::draw() -> void {
   std::function<void(FolderItem *)> draw_folder =
       [&](FolderItem *item) -> void {
     if (ImGui::TreeNode((void *)item, "%s %s",
-                        ui::icon_code_point(ui::Icon::FOLDER),
+                        ui::icon_code_point(item->get_icon()),
                         item->get_label().data())) {
       for (auto &sub_item : item->get_sub_items()) {
         draw_folder(sub_item.get());
