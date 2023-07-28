@@ -18,5 +18,6 @@ class FolderItem {
   virtual auto get_uid() -> core::UUID = 0;
   virtual auto get_sub_items()
       -> const std::vector<std::shared_ptr<FolderItem>>& = 0;
+  virtual ~FolderItem() = default;
 };
 }  // namespace afro::store
