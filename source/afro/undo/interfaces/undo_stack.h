@@ -2,10 +2,10 @@
 
 #include <memory>
 
-#include "core/interfaces/command.h"
+#include "common/interfaces/command.h"
 
 namespace afro::undo {
-using Operation = std::unique_ptr<core::Command>;
+using Operation = std::unique_ptr<Command>;
 
 class UndoStack {
  public:

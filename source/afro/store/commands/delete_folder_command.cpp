@@ -1,7 +1,9 @@
 #include "delete_folder_command.h"
 
+#include <algorithm>
+
 namespace afro::store {
-DeleteFolderCommand::DeleteFolderCommand(core::UUID folder_uid, Folder* parent)
+DeleteFolderCommand::DeleteFolderCommand(UUID folder_uid, Folder* parent)
     : Command("FOLDER_OP_DELETE"), folder_uid(folder_uid), parent(parent) {}
 
 auto DeleteFolderCommand::execute() -> void {

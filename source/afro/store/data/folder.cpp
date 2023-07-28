@@ -12,18 +12,18 @@
 #include "ui/data/icons.h"
 
 namespace afro::store {
-using afro::core::UUID;
+using afro::UUID;
 
 Folder::Folder(UUID uid, std::string name) : uid(uid), name(std::move(name)) {}
 
-Folder::Folder(core::UUID uid, std::string name, Folder* parent_folder)
+Folder::Folder(UUID uid, std::string name, Folder* parent_folder)
     : uid(uid), name(std::move(name)), parent_folder(parent_folder) {}
 
 auto Folder::get_label() -> std::string_view { return name; }
 
 auto Folder::get_icon() -> ui::Icon { return ui::Icon::FOLDER; }
 
-auto Folder::get_uid() -> core::UUID { return uid; }
+auto Folder::get_uid() -> UUID { return uid; }
 
 auto Folder::get_sub_items()
     -> const std::vector<std::shared_ptr<FolderItem>>& {

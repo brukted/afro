@@ -46,7 +46,7 @@ set_target_properties(afro PROPERTIES ${DEFAULT_PROJECT_OPTIONS})
 
 # Sub directories
 
-add_subdirectory(core)
+add_subdirectory(common)
 add_subdirectory(imnodes)
 add_subdirectory(ui)
 add_subdirectory(io)

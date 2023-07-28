@@ -10,22 +10,22 @@
 #include <string>
 #include <vector>
 
-#include "core/data/uuid.h"
+#include "common/data/uuid.h"
 #include "store/interfaces/folder_item.h"
 
 namespace afro::store {
 struct Folder : public FolderItem {
-  const core::UUID uid;
+  const UUID uid;
   std::string name;
   Folder* parent_folder = nullptr;
   std::vector<std::shared_ptr<Folder>> sub_folders;
   std::vector<std::shared_ptr<FolderItem>> items;
-  Folder(core::UUID uid, std::string name);
-  Folder(core::UUID uid, std::string name, Folder* parent_folder);
+  Folder(UUID uid, std::string name);
+  Folder(UUID uid, std::string name, Folder* parent_folder);
 
   auto get_label() -> std::string_view override;
   auto get_icon() -> ui::Icon override;
-  auto get_uid() -> core::UUID override;
+  auto get_uid() -> UUID override;
   auto get_sub_items()
       -> const std::vector<std::shared_ptr<FolderItem>>& override;
 

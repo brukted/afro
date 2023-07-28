@@ -1,0 +1,1 @@
+target_sources(afro PUBLIC command.h object.h)

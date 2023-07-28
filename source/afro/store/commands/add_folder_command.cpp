@@ -7,17 +7,16 @@
 #include <cstddef>
 #include <utility>
 
-#include "core/data/uuid.h"
+#include "common/data/uuid.h"
 
 namespace afro::store {
-using afro::core::CommandResult;
+using afro::CommandResult;
 
 store::AddFolderCommand::AddFolderCommand(Folder* parent)
     : Command("FOLDER_OP_CREATE"), parent(parent) {}
 
 auto store::AddFolderCommand::execute() -> void {
-  auto new_folder =
-      std::make_unique<Folder>(core::generate_uuid(), folder_name);
+  auto new_folder = std::make_unique<Folder>(generate_uuid(), folder_name);
   folder_uid = new_folder->uid;
   parent->add_item(std::move(new_folder));
 }
@@ -40,7 +39,7 @@ auto store::AddFolderCommand::redo() -> void {
   parent->add_sub_folder(std::move(folder));
 }
 
-auto store::AddFolderCommand::draw() -> core::CommandResult {
+auto store::AddFolderCommand::draw() -> CommandResult {
   auto result = CommandResult::DRAWING_UI;
   ImGui::OpenPopup(translate("Add Folder"));
   if (ImGui::BeginPopupModal(translate("Add Folder"))) {

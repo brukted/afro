@@ -5,7 +5,7 @@
 #include <string>
 #include <string_view>
 
-namespace afro::core {
+namespace afro {
 
 enum class CommandResult { DRAWING_UI, CANCELED, FINISHED_UI };
 
@@ -48,4 +48,4 @@ struct Command {
   auto operator=(Command &) -> Command & = delete;
   virtual ~Command() = default;
 };
-}  // namespace afro::core
+}  // namespace afro
