@@ -8,6 +8,7 @@
 
 #include <fruit/fruit.h>
 
+#include "property/di.h"
 #include "store/di.h"
 #include "ui/di.h"
 #include "undo/di.h"
@@ -15,10 +16,11 @@
 namespace afro {
 auto get_root_component()
     -> fruit::Component<undo::UndoStack, undo::DebugWindow, store::Data,
-                        store::Outliner, ui::Window> {
+                        store::Outliner, ui::Window, property::PropertyEditor> {
   return fruit::createComponent()
       .install(undo::getUndoComponent)
       .install(store::getStoreComponent)
-      .install(ui::getUiComponent);
+      .install(ui::getUiComponent)
+      .install(property::get_property_component);
 }
 }  // namespace afro

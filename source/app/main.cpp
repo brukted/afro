@@ -12,7 +12,7 @@ auto main() -> int {
   log::init_log(log::get_logger(), log::LogLevel::trace);
 
   fruit::Injector<undo::UndoStack, undo::DebugWindow, store::Data,
-                  store::Outliner, ui::Window>
+                  store::Outliner, ui::Window, property::PropertyEditor>
       injector(get_root_component);
 
   auto* main_window = injector.get<ui::Window*>();
@@ -20,6 +20,7 @@ auto main() -> int {
   // setup window
   main_window->startup();
   main_window->add_widget(injector.get<shared_ptr<store::Outliner>>());
+  main_window->add_widget(injector.get<shared_ptr<property::PropertyEditor>>());
 
   while (main_window->draw()) {
     // execute operators

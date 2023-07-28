@@ -17,6 +17,8 @@
         "docking-experimental"
       ]
     },
+    "boost-uuid",
+    "boost-signals2",
     {
       "name": "openimageio",
       "features": [
