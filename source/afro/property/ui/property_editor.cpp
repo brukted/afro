@@ -28,7 +28,7 @@ void PropertyEditor::draw() {
 
   ImGui::TextUnformatted(translate("Properties"));
   ImGui::Separator();
-  
+
   if (properties == nullptr) {
     ImGui::TextUnformatted(translate("No properties to display"));
     ImGui::End();
@@ -44,7 +44,7 @@ void PropertyEditor::draw() {
 
 auto PropertyEditor::get_draw_function(Property &property)
     -> std::function<void(Property &)> {
-  switch (property.property_definition.value_type) {
+  switch (property.get_property_definition().value_type) {
     case ValueType::INTEGER:
       return draw_integer_property;
     case ValueType::INTEGER_2:

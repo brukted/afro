@@ -98,6 +98,8 @@ auto MainWindow::init_imgui() -> void {
   ImGuiIO &io = ImGui::GetIO();
   (void)io;
 
+  ImNodes::GetIO().EmulateThreeButtonMouse.Modifier = &ImGui::GetIO().KeyAlt;
+
   log::core_trace("setting up imgui style");
 
   static auto layout_file = (paths::config_dir() / layout_file_name).string();

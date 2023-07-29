@@ -12,7 +12,7 @@
 
 namespace afro::property {
 auto draw_integer_property(Property& property) -> void {
-  const auto& prop_def = property.property_definition;
+  const auto& prop_def = property.get_property_definition();
 
   ImGui::PushID(prop_def.id.data());
   ImGui::TextUnformatted(prop_def.name.data());
@@ -35,7 +35,7 @@ auto draw_integer_property(Property& property) -> void {
 }
 
 auto draw_integer2_property(Property& property) -> void {
-  const auto& prop_def = property.property_definition;
+  const auto& prop_def = property.get_property_definition();
 
   ImGui::PushID(prop_def.id.data());
   ImGui::TextUnformatted(prop_def.name.data());
@@ -94,7 +94,7 @@ auto draw_integer2_property(Property& property) -> void {
 }
 
 auto draw_integer3_property(Property& property) -> void {
-  const auto& prop_def = property.property_definition;
+  const auto& prop_def = property.get_property_definition();
 
   ImGui::PushID(prop_def.id.data());
   ImGui::TextUnformatted(prop_def.name.data());
@@ -124,7 +124,7 @@ auto draw_integer3_property(Property& property) -> void {
 }
 
 auto draw_integer4_property(Property& property) -> void {
-  const auto& prop_def = property.property_definition;
+  const auto& prop_def = property.get_property_definition();
 
   ImGui::PushID(prop_def.id.data());
   ImGui::TextUnformatted(prop_def.name.data());
@@ -155,7 +155,7 @@ auto draw_integer4_property(Property& property) -> void {
 }
 
 auto draw_float_property(Property& property) -> void {
-  const auto& prop_def = property.property_definition;
+  const auto& prop_def = property.get_property_definition();
 
   ImGui::PushID(prop_def.id.data());
   ImGui::TextUnformatted(prop_def.name.data());
@@ -178,7 +178,7 @@ auto draw_float_property(Property& property) -> void {
 }
 
 auto draw_float2_property(Property& property) -> void {
-  const auto& prop_def = property.property_definition;
+  const auto& prop_def = property.get_property_definition();
 
   ImGui::PushID(prop_def.id.data());
   ImGui::TextUnformatted(prop_def.name.data());
@@ -209,7 +209,7 @@ auto draw_float2_property(Property& property) -> void {
 }
 
 auto draw_float3_property(Property& property) -> void {
-  const auto& prop_def = property.property_definition;
+  const auto& prop_def = property.get_property_definition();
 
   ImGui::PushID(prop_def.id.data());
   ImGui::TextUnformatted(prop_def.name.data());
@@ -248,7 +248,7 @@ auto draw_float3_property(Property& property) -> void {
 }
 
 auto draw_float4_property(Property& property) -> void {
-  const auto& prop_def = property.property_definition;
+  const auto& prop_def = property.get_property_definition();
 
   ImGui::PushID(prop_def.id.data());
   ImGui::TextUnformatted(prop_def.name.data());
@@ -289,7 +289,7 @@ auto draw_float4_property(Property& property) -> void {
 }
 
 auto draw_bool_property(Property& property) -> void {
-  const auto& prop_def = property.property_definition;
+  const auto& prop_def = property.get_property_definition();
 
   ImGui::PushID(prop_def.id.data());
   ImGui::TextUnformatted(prop_def.name.data());
@@ -304,7 +304,7 @@ auto draw_bool_property(Property& property) -> void {
 }
 
 auto draw_string_property(Property& property) -> void {
-  const auto& prop_def = property.property_definition;
+  const auto& prop_def = property.get_property_definition();
 
   ImGui::PushID(prop_def.id.data());
   ImGui::TextUnformatted(prop_def.name.data());
@@ -327,7 +327,7 @@ auto draw_string_property(Property& property) -> void {
 }
 
 auto draw_enum_property(Property& property) -> void {
-  const auto& prop_def = property.property_definition;
+  const auto& prop_def = property.get_property_definition();
 
   ImGui::PushID(prop_def.id.data());
   ImGui::TextUnformatted(prop_def.name.data());

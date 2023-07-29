@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <string_view>
 #include <vector>
 
 #include "common/data/uuid.h"
@@ -15,15 +16,22 @@
 namespace afro::graph {
 
 class Node : public AfObject {
+ private:
+  std::string name = "Node";
+
  public:
-  IVec2 position = {0, 0};
+  FVec2 position = {0, 0};
   bool is_visible = true;
 
-  Node(UUID uuid, std::vector<property::Property> properties)
-      : AfObject(uuid, std::move(properties)) {}
+  Node(UUID uuid, std::vector<property::Property> properties, std::string name)
+      : AfObject(uuid, std::move(properties)), name(std::move(name)) {
+    position = {0, 0};
+  }
 
-  Node(std::vector<property::Property> properties)
-      : AfObject(std::move(properties)) {}
+  Node(std::vector<property::Property> properties, std::string name)
+      : AfObject(std::move(properties)), name(std::move(name)) {}
+
+  auto get_name() -> std::string_view { return name; }
 
   ~Node() override = default;
 };

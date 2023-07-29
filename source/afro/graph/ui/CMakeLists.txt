@@ -1,0 +1,1 @@
+target_sources(afro PUBLIC graph_editor.cpp graph_editor.h id_map.h)

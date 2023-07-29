@@ -13,10 +13,9 @@ namespace afro {
 class AfObject {
  private:
   UUID uuid;
-
- public:
   std::vector<property::Property> properties;
 
+ public:
   AfObject(UUID uuid, std::vector<property::Property> properties)
       : uuid(uuid), properties(std::move(properties)) {}
 
@@ -26,6 +25,8 @@ class AfObject {
   AfObject() : uuid(generate_uuid()) {}
 
   [[nodiscard]] auto get_uuid() const -> UUID { return uuid; }
+
+  [[nodiscard]] auto& get_properties() const { return properties; }
 
   virtual ~AfObject() = default;
 };
