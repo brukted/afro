@@ -58,6 +58,7 @@ add_subdirectory(render)
 add_subdirectory(store)
 add_subdirectory(undo)
 add_subdirectory(utils)
+add_subdirectory(graph)
 
 #
 # Include directories

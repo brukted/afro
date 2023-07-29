@@ -1,0 +1,1 @@
+target_sources(afro PUBLIC node.h node.cpp graph.h graph.cpp graph_item.h graph_item.cpp link.h)
