@@ -1,0 +1,1 @@
+target_sources(afro PUBLIC add_link_command.h add_node_command.h delete_links_command.h)

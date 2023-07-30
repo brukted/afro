@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <boost/signals2/signal.hpp>
 #include <string_view>
 #include <vector>
 
@@ -21,7 +22,8 @@ class Node : public AfObject {
 
  public:
   FVec2 position = {0, 0};
-  bool is_visible = true;
+  boost::signals2::signal<void()> on_invalidate;
+  boost::signals2::signal<void()> on_delete;
 
   Node(UUID uuid, std::vector<property::Property> properties, std::string name)
       : AfObject(uuid, std::move(properties)), name(std::move(name)) {
