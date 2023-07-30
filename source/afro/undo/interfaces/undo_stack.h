@@ -23,7 +23,8 @@ class UndoStack {
   virtual auto redo(int depth = 1) -> void = 0;
   virtual auto has_undo() const -> bool = 0;
   virtual auto has_redo() const -> bool = 0;
-  virtual auto push_operation(Operation item) -> void = 0;
+  virtual auto enqueue(Operation item) -> void = 0;
+  virtual auto execute_pending() -> void = 0;
   virtual auto get_operations() const -> const std::vector<Operation>& = 0;
   /**
    * @brief Returns the index of the next undo operation. This is used to

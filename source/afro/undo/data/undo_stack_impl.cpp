@@ -29,6 +29,20 @@ auto UndoStackImpl::has_redo() const -> bool {
   return next_undo_idx != static_cast<int>(operations.size() - 1);
 }
 
+auto UndoStackImpl::enqueue(Operation item) -> void {
+  pending_operations.emplace_back(std::move(item));
+}
+
+auto UndoStackImpl::execute_pending() -> void {
+  execute_undo();
+  execute_redo();
+  while (!pending_operations.empty()) {
+    pending_operations.front()->execute();
+    push_operation(std::move(pending_operations.front()));
+    pending_operations.pop_front();
+  }
+}
+
 auto UndoStackImpl::push_operation(Operation item) -> void {
   // Removes anything undone, if there is any
   if (next_undo_idx != static_cast<int>(operations.size() - 1)) {
