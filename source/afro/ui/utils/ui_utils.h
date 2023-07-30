@@ -13,6 +13,7 @@
 #include <string_view>
 #include <utility>
 
+#include "undo/interfaces/undo_stack.h"
 #include "utils/preferences.h"
 
 namespace afro::ui {
@@ -29,5 +30,27 @@ auto draw_icon(Icon icon) -> void;
  * from preferences.
  */
 auto tooltip(std::string_view text, float delay = 1.0F) -> void;
+
+template <typename T, typename... Args>
+auto draw_command(undo::UndoStack *stack, const std::string_view name,
+                  Args... args) -> bool {
+  if (ImGui::Button(name.data())) {
+    stack->enqueue(std::unique_ptr<T>(new T(args...)));
+    return true;
+  }
+  return false;
+}
+
+template <typename T, typename... Args>
+auto draw_command(undo::UndoStack *stack, const std::string_view name,
+                  const Icon icon, Args... args) -> bool {
+  draw_icon(icon);
+  ImGui::SameLine();
+  if (ImGui::Button(name.data())) {
+    stack->enqueue(std::unique_ptr<T>(new T(args...)));
+    return true;
+  }
+  return false;
+}
 
 }  // namespace afro::ui
