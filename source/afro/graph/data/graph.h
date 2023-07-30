@@ -43,6 +43,8 @@ class Graph : AfObject {
   auto remove_link(const Link& link) -> void;
   auto remove_links(const std::vector<Link>& links) -> void;
   [[nodiscard]] auto get_link_by_uuid(UUID uuid) -> Link;
+  [[nodiscard]] auto get_links_by_uuids(const std::vector<UUID>& uuids)
+      -> std::vector<Link>;
   [[nodiscard]] auto get_links_to_node(UUID uuid) -> std::vector<Link>;
   [[nodiscard]] auto get_links_from_node(UUID uuid) -> std::vector<Link>;
 

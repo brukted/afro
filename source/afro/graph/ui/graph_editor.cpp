@@ -9,6 +9,8 @@
 #include <imgui.h>
 #include <imgui_stdlib.h>
 
+#include "graph/commands/add_link_command.h"
+#include "graph/commands/delete_links_command.h"
 #include "imnodes/imnodes.h"
 #include "utils/assert.h"
 #include "utils/translation.h"
@@ -89,35 +91,49 @@ auto GraphEditor::check_for_new_links() -> void {
   int to_node = 0;
   int to_socket = 0;
   if (ImNodes::IsLinkCreated(&from_node, &from_socket, &to_node, &to_socket)) {
-    // TODO: Create link
     auto from_node_uuid = node_id_map.get_uuid(from_node);
     auto to_node_uuid = node_id_map.get_uuid(to_node);
     auto from_socket_uuid = attr_id_map.get_uuid(from_socket);
     auto to_socket_uuid = attr_id_map.get_uuid(to_socket);
-    log::core_debug("Creating link from {}:{} to {}:{}", from_node_uuid,
+
+    undo_stack->enqueue(std::make_unique<AddLinkCommand>(
+        graph, Link({from_node_uuid, from_socket_uuid},
+                    {to_node_uuid, to_socket_uuid})));
+
+    log::core_debug("Created link from {}:{} to {}:{}", from_node_uuid,
                     from_socket_uuid, to_node_uuid, to_socket_uuid);
   }
 }
 
 auto GraphEditor::check_for_deleted_links() -> void {
-  auto selected_links = std::vector<int>(ImNodes::NumSelectedLinks());
+  auto selected_links = ImNodes::NumSelectedLinks();
 
-  if ((!selected_links.empty()) && (ImGui::IsKeyPressed(ImGuiKey_Delete) ||
-                                    ImGui::IsKeyPressed(ImGuiKey_Backspace))) {
-    ImNodes::GetSelectedLinks(selected_links.data());
-    for (const auto link_id : selected_links) {
-      // TODO: Delete links
-      auto link_uuid = link_id_map.get_uuid(link_id);
-      log::core_debug("Deleting link {}", link_uuid);
+  if (selected_links != 0 && (ImGui::IsKeyPressed(ImGuiKey_Delete) ||
+                              ImGui::IsKeyPressed(ImGuiKey_Backspace))) {
+    auto selected_links_id = std::vector<int>(selected_links);
+    ImNodes::GetSelectedLinks(selected_links_id.data());
+
+    auto link_uuids = std::vector<UUID>();
+    for (const auto link_id : selected_links_id) {
+      link_uuids.push_back(link_id_map.get_uuid(link_id));
     }
+
+    undo_stack->enqueue(std::make_unique<DeleteLinks>(
+        graph, graph->get_links_by_uuids(link_uuids)));
+    std::string link_uuids_str;
+    for (const auto &link_uuid : link_uuids) {
+      link_uuids_str += fmt::format("{} ", link_uuid);
+    }
+    log::core_debug("Deleted links : [{}] ", link_uuids_str);
     ImNodes::ClearLinkSelection();
   }
 
   int link_id = 0;
   if (ImNodes::IsLinkDestroyed(&link_id)) {
-    // TODO: Delete link
     auto link_uuid = link_id_map.get_uuid(link_id);
-    log::core_debug("Deleting link {}", link_uuid);
+    undo_stack->enqueue(std::make_unique<DeleteLinks>(
+        graph, graph->get_links_by_uuids({link_uuid})));
+    log::core_debug("Deleted link {}", link_uuid);
   }
 }
 

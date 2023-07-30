@@ -98,5 +98,13 @@ auto Graph::remove_links(const std::vector<Link>& links) -> void {
     this->remove_link(link);
   }
 }
+auto Graph::get_links_by_uuids(const std::vector<UUID>& uuids)
+    -> std::vector<Link> {
+  std::vector<Link> res;
+  for (const auto& uuid : uuids) {
+    res.push_back(this->get_link_by_uuid(uuid));
+  }
+  return res;
+}
 
 }  // namespace afro::graph

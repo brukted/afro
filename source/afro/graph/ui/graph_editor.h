@@ -12,18 +12,20 @@
 #include "graph/data/graph.h"
 #include "id_map.h"
 #include "ui/interfaces/widget.h"
+#include "undo/interfaces/undo_stack.h"
 
 struct ImNodesEditorContext;
 
 namespace afro::graph {
 class GraphEditor : public ui::Widget {
  protected:
+  std::shared_ptr<Graph> graph;
   virtual auto draw_node_body(Node& node) -> void = 0;
   virtual auto draw_main_context_menu() -> void = 0;
 
  private:
+  std::shared_ptr<undo::UndoStack> undo_stack;
   std::string name = "Graph Editor";
-  std::shared_ptr<Graph> graph;
   // Bidirectional maps of UUID and imnodes' integer ids
   IDMap node_id_map;
   IDMap link_id_map;
@@ -38,7 +40,8 @@ class GraphEditor : public ui::Widget {
   auto draw_property(const property::Property& property) -> void;
 
  public:
-  GraphEditor(std::string name) : name(std::move(name)) {}
+  GraphEditor(std::string name, std::shared_ptr<undo::UndoStack> undo_stack)
+      : undo_stack(std::move(undo_stack)), name(std::move(name)) {}
 
   auto draw() -> void override;
   auto set_graph(std::shared_ptr<Graph> graph) -> void;

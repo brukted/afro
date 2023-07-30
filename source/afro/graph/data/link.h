@@ -25,10 +25,10 @@ struct Link {
   Link(UUID uuid, UUID to_node, UUID from_node, UUID to_property,
        UUID from_property)
       : uuid(uuid),
-        to_node(to_node),
         from_node(from_node),
-        to_property(to_property),
-        from_property(from_property) {}
+        from_property(from_property),
+        to_node(to_node),
+        to_property(to_property) {}
 
   Link(std::tuple<UUID, UUID> from, std::tuple<UUID, UUID> to)
       : uuid(generate_uuid()),

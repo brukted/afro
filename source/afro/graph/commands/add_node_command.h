@@ -18,16 +18,16 @@ namespace afro::graph {
 
 class AddNode : public Command {
  private:
-  material::MaterialNodeDefinition node_definition;
   std::shared_ptr<Node> node;
+  material::MaterialNodeDefinition node_definition;
   std::shared_ptr<Graph> graph;
 
  public:
   AddNode(material::MaterialNodeDefinition node_definition,
           std::shared_ptr<Graph> graph)
       : Command("ADD_NODE"),
-        node_definition(std::move(node_definition)),
         node(material::MaterialNode::create(node_definition)),
+        node_definition(std::move(node_definition)),
         graph(std::move(graph)) {}
 
   auto execute() -> void override { graph->add_node(node); }
