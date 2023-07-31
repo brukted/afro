@@ -11,6 +11,7 @@
 
 #include "graph/data/graph.h"
 #include "id_map.h"
+#include "property/ui/property_editor.h"
 #include "ui/interfaces/widget.h"
 #include "undo/interfaces/undo_stack.h"
 
@@ -24,6 +25,7 @@ class GraphEditor : public ui::Widget {
   virtual auto draw_main_context_menu() -> void = 0;
 
  private:
+  std::shared_ptr<property::PropertyEditor> props_editor;
   std::shared_ptr<undo::UndoStack> undo_stack;
   std::string name = "Graph Editor";
   // Bidirectional maps of UUID and imnodes' integer ids
@@ -36,12 +38,15 @@ class GraphEditor : public ui::Widget {
   auto check_for_new_links() -> void;
   auto check_for_deleted_links() -> void;
   auto check_for_deleted_nodes() -> void;
-  auto draw_node(Node& node) -> void;
+  auto draw_node(std::shared_ptr<Node> node) -> void;
   auto draw_property(const property::Property& property) -> void;
 
  public:
-  GraphEditor(std::string name, std::shared_ptr<undo::UndoStack> undo_stack)
-      : undo_stack(std::move(undo_stack)), name(std::move(name)) {}
+  GraphEditor(std::string name, std::shared_ptr<undo::UndoStack> undo_stack,
+              std::shared_ptr<property::PropertyEditor> props_editor)
+      : props_editor(props_editor),
+        undo_stack(std::move(undo_stack)),
+        name(std::move(name)) {}
 
   auto draw() -> void override;
   auto set_graph(std::shared_ptr<Graph> graph) -> void;

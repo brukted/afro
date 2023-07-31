@@ -39,8 +39,8 @@ auto GraphEditor::draw() -> void {
   ImNodes::EditorContextSet(imnodes_context);
   ImNodes::BeginNodeEditor();
   // Draw nodes
-  for (auto &node : graph->get_nodes()) {
-    draw_node(*node);
+  for (auto node : graph->get_nodes()) {
+    draw_node(node);
   }
 
   // Draw links
@@ -66,23 +66,27 @@ auto GraphEditor::draw() -> void {
   ImGui::End();
 }
 
-auto GraphEditor::draw_node(Node &node) -> void {
-  ImNodes::BeginNode(node_id_map.create_or_get_imnodes_id(node.get_uuid()));
+auto GraphEditor::draw_node(std::shared_ptr<Node> node) -> void {
+  ImNodes::BeginNode(node_id_map.create_or_get_imnodes_id(node->get_uuid()));
 
   ImNodes::BeginNodeTitleBar();
   if (show_debug_node_id) {
-    ImGui::Text("%s\n (%llu)", node.get_name().data(), node.get_uuid());
+    ImGui::Text("%s\n (%llu)", node->get_name().data(), node->get_uuid());
   } else {
-    ImGui::TextUnformatted(node.get_name().data());
+    ImGui::TextUnformatted(node->get_name().data());
   }
   ImNodes::EndNodeTitleBar();
 
-  for (const auto &property : node.get_properties()) {
+  for (const auto &property : node->get_properties()) {
     draw_property(property);
   }
-  draw_node_body(node);
+  draw_node_body(*node);
 
   ImNodes::EndNode();
+
+  if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) {
+    props_editor->set_object(node);
+  }
 }
 
 auto GraphEditor::check_for_new_links() -> void {
@@ -204,10 +208,11 @@ auto GraphEditor::draw_property(const property::Property &property) -> void {
   };
 
   switch (property.get_property_definition().value_type) {
-    case property::ValueType::INTEGER:
+    case property::ValueType::FLOAT:
       style.Colors[ImNodesCol_::ImNodesCol_Pin] = IM_COL32(128, 128, 128, 255);
       break;
-    case property::ValueType::INTEGER_4:
+    case property::ValueType::FLOAT_4:
+    case property::ValueType::FLOAT_3:
       style.Colors[ImNodesCol_::ImNodesCol_Pin] = IM_COL32(255, 255, 0, 255);
       break;
     default:

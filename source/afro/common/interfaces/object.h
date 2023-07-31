@@ -26,7 +26,7 @@ class AfObject {
 
   [[nodiscard]] auto get_uuid() const -> UUID { return uuid; }
 
-  [[nodiscard]] auto& get_properties() const { return properties; }
+  [[nodiscard]] auto& get_properties() { return properties; }
 
   virtual ~AfObject() = default;
 };

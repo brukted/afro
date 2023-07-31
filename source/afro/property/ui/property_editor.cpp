@@ -29,14 +29,16 @@ void PropertyEditor::draw() {
   ImGui::TextUnformatted(translate("Properties"));
   ImGui::Separator();
 
-  if (properties == nullptr) {
+  if (object.expired()) {
+    object.reset();
     ImGui::TextUnformatted(translate("No properties to display"));
     ImGui::End();
     return;
-  } else {
-    for (auto &property : *properties) {
-      get_draw_function (*property)(*property);
-    }
+  }
+
+  auto &properties = object.lock()->get_properties();
+  for (auto &property : properties) {
+    get_draw_function(property)(property);
   }
 
   ImGui::End();
@@ -72,5 +74,8 @@ auto PropertyEditor::get_draw_function(Property &property)
         ImGui::TextUnformatted(translate("Unknown property type"));
       };
   }
+}
+void PropertyEditor::set_object(std::weak_ptr<AfObject> object_) {
+  object = object_;
 }
 }  // namespace afro::property
