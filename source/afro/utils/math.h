@@ -20,6 +20,8 @@ struct Vec2 {
 
   Vec2(T x = 0, T y = 0) : x(x), y(y) {}
 
+  auto data() -> T* { return reinterpret_cast<T*>(this); }
+
   auto operator+(const Vec2<T>& b) const -> Vec2<T> {
     Vec2<T> vec;
     vec.x = x + b.x;
@@ -56,6 +58,8 @@ struct Vec3 {
   T z;
 
   Vec3(T x = 0, T y = 0, T z = 0) : x(x), y(y), z(z) {}
+
+  auto data() -> T* { return reinterpret_cast<T*>(this); }
 
   auto operator+(const Vec3<T>& b) const -> Vec3<T> {
     Vec3<T> vec;
@@ -98,6 +102,8 @@ struct Vec4 {
   T w;
 
   Vec4(T x = 0, T y = 0, T z = 0, T w = 0) : x(x), y(y), z(z), w(w) {}
+
+  auto data() -> T* { return reinterpret_cast<T*>(this); }
 
   auto operator+(const Vec4<T>& b) const -> Vec4<T> {
     Vec4<T> vec;

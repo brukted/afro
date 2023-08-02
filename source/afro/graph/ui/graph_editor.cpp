@@ -78,7 +78,9 @@ auto GraphEditor::draw_node(std::shared_ptr<Node> node) -> void {
   ImNodes::EndNodeTitleBar();
 
   for (const auto &property : node->get_properties()) {
-    draw_property(property);
+    if (property.get_property_definition().is_socket) {
+      draw_property(property);
+    }
   }
   draw_node_body(*node);
 

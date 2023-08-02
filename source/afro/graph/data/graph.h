@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <boost/signals2/signal.hpp>
 #include <memory>
 
 #include "common/interfaces/object.h"
@@ -22,6 +23,12 @@ class Graph : AfObject {
   std::vector<Link> links;
 
  public:
+  // Signals
+  boost::signals2::signal<void(std::shared_ptr<Node>)> node_added;
+  boost::signals2::signal<void(std::shared_ptr<Node>)> node_removed;
+  boost::signals2::signal<void(Link)> link_added;
+  boost::signals2::signal<void(Link)> link_removed;
+
   Graph() = default;
 
   Graph(std::vector<property::Property> properties)
@@ -34,7 +41,7 @@ class Graph : AfObject {
   auto add_node(std::shared_ptr<Node> node) -> void;
   auto remove_node_by_uuid(const UUID& uuid) -> void;
   auto get_nodes() -> std::vector<std::shared_ptr<Node>>&;
-  auto get_node_by_uuid(const UUID& uuid) -> Node*;
+  auto get_node_by_uuid(const UUID& uuid) -> std::shared_ptr<Node>;
 
   // Links
   [[nodiscard]] auto get_links() const -> const std::vector<Link>&;

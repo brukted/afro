@@ -1,0 +1,1 @@
+target_sources(afro PUBLIC material_editor.cpp material_editor.h)

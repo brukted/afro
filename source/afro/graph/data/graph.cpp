@@ -14,37 +14,44 @@ namespace views = std::ranges::views;
 namespace afro::graph {
 
 auto Graph::add_node(std::shared_ptr<Node> node) -> void {
-  nodes.push_back(std::move(node));
+  nodes.push_back(node);
+  node_added(std::move(node));
 }
 
 auto Graph::remove_node_by_uuid(const UUID& uuid) -> void {
-  for (auto it = nodes.begin(); it != nodes.end(); ++it) {
-    if ((*it)->get_uuid() == uuid) {
-      nodes.erase(it);
-      break;
-    }
-  }
+  auto iter = std::remove_if(nodes.begin(), nodes.end(),
+                             [&uuid](const std::shared_ptr<Node>& node) {
+                               return node->get_uuid() == uuid;
+                             });
+  std::shared_ptr<Node> node = *iter;
+  nodes.erase(iter);
+  node_removed(std::move(node));
+  // TODO: Remove links
 }
 
 auto Graph::get_nodes() -> std::vector<std::shared_ptr<Node>>& { return nodes; }
 
-auto Graph::get_node_by_uuid(const UUID& uuid) -> Node* {
+auto Graph::get_node_by_uuid(const UUID& uuid) -> std::shared_ptr<Node> {
   auto it = std::find_if(nodes.begin(), nodes.end(),
                          [&uuid](const std::shared_ptr<Node>& node) {
                            return node->get_uuid() == uuid;
                          });
-  return (it != nodes.end()) ? it->get() : nullptr;
+  return (it != nodes.end()) ? *it : nullptr;
 }
 
 auto Graph::get_links() const -> const std::vector<Link>& {
   return this->links;
 }
 
-auto Graph::add_link(Link link) -> void { this->links.push_back(link); }
+auto Graph::add_link(Link link) -> void {
+  this->links.push_back(link);
+  link_added(link);
+}
 
 auto Graph::remove_link(const Link& link) -> void {
   auto it = std::remove(links.begin(), links.end(), link.get_uuid());
   links.erase(it);
+  link_removed(link);
 }
 
 auto Graph::get_link_by_uuid(const UUID uuid) -> Link {

@@ -23,6 +23,8 @@ class GraphEditor : public ui::Widget {
   std::shared_ptr<Graph> graph;
   virtual auto draw_node_body(Node& node) -> void = 0;
   virtual auto draw_main_context_menu() -> void = 0;
+  auto set_graph(std::shared_ptr<Graph> graph) -> void;
+  virtual auto clear_graph() -> void;
 
  private:
   std::shared_ptr<property::PropertyEditor> props_editor;
@@ -49,9 +51,6 @@ class GraphEditor : public ui::Widget {
         name(std::move(name)) {}
 
   auto draw() -> void override;
-  auto set_graph(std::shared_ptr<Graph> graph) -> void;
-  auto clear_graph() -> void;
-
   ~GraphEditor() override = default;
 };
 

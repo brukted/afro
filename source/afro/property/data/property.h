@@ -5,6 +5,7 @@
 #include "common/data/uuid.h"
 #include "property_definition.h"
 #include "property_value.h"
+#include "utils/log.h"
 
 namespace afro::property {
 class Property {
@@ -24,7 +25,7 @@ class Property {
 
   [[nodiscard]] auto get_uuid() const -> UUID { return uuid; }
 
-  [[nodiscard]] auto& get_property_definition() const {
+  [[nodiscard]] auto get_property_definition() const -> auto& {
     return property_definition;
   }
 
@@ -37,6 +38,8 @@ class Property {
   auto set(T new_value) -> void {
     this->value = new_value;
     on_value_changed(*this);
+    log::core_trace("Property {} changed signal emitted.",
+                    property_definition.name);
   }
 
   template <typename T>

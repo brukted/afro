@@ -23,15 +23,32 @@ class Node : public AfObject {
  public:
   FVec2 position = {0, 0};
   boost::signals2::signal<void()> on_invalidate;
-  boost::signals2::signal<void()> on_delete;
 
   Node(UUID uuid, std::vector<property::Property> properties, std::string name)
       : AfObject(uuid, std::move(properties)), name(std::move(name)) {
     position = {0, 0};
+    for (auto& prop : this->get_properties()) {
+      if (prop.get_property_definition().type == property::Type::INPUT) {
+        prop.on_value_changed.connect([this](auto&) {
+          log::core_trace("Node::on_invalidate");
+          on_invalidate();
+        });
+      }
+    }
   }
 
   Node(std::vector<property::Property> properties, std::string name)
-      : AfObject(std::move(properties)), name(std::move(name)) {}
+      : AfObject(std::move(properties)), name(std::move(name)) {
+    position = {0, 0};
+    for (auto& prop : this->get_properties()) {
+      if (prop.get_property_definition().type == property::Type::INPUT) {
+        prop.on_value_changed.connect([this](auto&) {
+          log::core_trace("Node::on_invalidate");
+          on_invalidate();
+        });
+      }
+    }
+  }
 
   auto get_name() -> std::string_view { return name; }
 

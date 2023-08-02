@@ -1,0 +1,1 @@
+target_sources(afro PUBLIC material_engine.h material_engine.cpp material_processor.h material_processor.cpp output_buffer.h output_buffer.cpp)

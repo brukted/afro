@@ -19,7 +19,7 @@ namespace afro::store {
 class Data {
  public:
   INJECT(Data()) {}
-  std::vector<std::unique_ptr<material_graph::MaterialGraph>> material_graphs;
+  std::vector<std::unique_ptr<graph::material::MaterialGraph>> material_graphs;
   Folder root_folder{0, "root"};
 };
 
