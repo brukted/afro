@@ -26,6 +26,11 @@ MaterialNodeExecFun MaterialNodeDefinition::def_exec_fun =
                 return link.get_to_property() == prop.get_uuid();
               });
           if (link != links.end()) {
+            auto& buffer = engine->get_buffer(link->get_from_property());
+            processor->set_texture(prop.get_property_definition().id,
+                                   buffer.texture_id);
+          } else {
+            // TODO: Generate a 1x1 texture with the default value or prop value
           }
         } else {
           // Props that begin with _ are common properties

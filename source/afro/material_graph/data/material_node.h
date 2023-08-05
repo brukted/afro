@@ -56,6 +56,7 @@ class MaterialNode : public Node {
 
   auto get_buffer_size() const -> IVec2;
   auto get_buffer_format() const -> gl::GLenum;
+  auto get_property(std::string_view prop_id) -> property::Property&;
 };
 
 }  // namespace afro::graph::material

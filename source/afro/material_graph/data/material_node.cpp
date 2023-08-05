@@ -13,4 +13,13 @@ auto MaterialNode::get_buffer_format() const -> gl::GLenum {
 auto MaterialNode::get_buffer_size() const -> IVec2 {
   return afro::IVec2(1024, 1024);
 }
+auto MaterialNode::get_property(std::string_view prop_id)
+    -> property::Property& {
+  for (auto& prop : get_properties()) {
+    if (prop.get_property_definition().id == prop_id) {
+      return prop;
+    }
+  }
+  throw std::runtime_error("Property not found");
+}
 }  // namespace afro::graph::material

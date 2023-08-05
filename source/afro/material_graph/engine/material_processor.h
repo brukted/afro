@@ -14,6 +14,7 @@ namespace afro::graph::material {
 class MaterialProcessor {
  private:
   bool is_initialized = false;
+  int texture_target_offset = 0;
   gl::GLuint program_id = 0;
   gl::GLuint vbo = 0, vao = 0, ebo = 0;
   //                                            x  | y |  z  | u |  v
@@ -32,11 +33,11 @@ class MaterialProcessor {
 
   auto deinit() -> void;
 
-  auto set_texture(std::string_view sampler_name, gl::GLint texture_unit) const
+  auto set_texture(std::string_view sampler_name, gl::GLint texture_unit)
       -> void;
 
   auto execute(gl::GLuint output_frame_buf, gl::GLuint tex_buf, int width,
-               int height) const -> void;
+               int height) -> void;
 
   auto set_prop(property::Property &prop) const -> void;
 

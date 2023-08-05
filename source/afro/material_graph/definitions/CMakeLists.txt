@@ -1,0 +1,1 @@
+target_sources(afro PUBLIC definitions.h definitions.cpp)

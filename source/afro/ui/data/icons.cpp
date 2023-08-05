@@ -28,8 +28,6 @@ auto icon_code_point(Icon icon) noexcept -> const char* {
     return ICON_MAP.at(icon).c_str();
 
   } catch (const std::out_of_range&) {
-    log::core_warn("icon code point missing for icon : {}",
-                   static_cast<int>(icon));
     return ICON_MAP.at(Icon::MISSING).c_str();
   }
 }

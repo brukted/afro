@@ -188,4 +188,16 @@ auto MaterialEngine::get_preview_texture(MaterialNode &node) -> gl::GLuint {
 
   return 0;
 }
+
+auto MaterialEngine::shutdown() -> void {
+  log::core_info("Shutting down material engine");
+  for (auto &processor : processors_) {
+    processor.second->deinit();
+  }
+}
+auto MaterialEngine::get_buffer(UUID prop_uuid) -> OutputBuffer & {
+  auto iter = buffers_.find(prop_uuid);
+  AF_ASSERT_MSG(iter != buffers_.end(), "Buffer does not exist")
+  return iter->second;
+}
 }  // namespace afro::graph::material

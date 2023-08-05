@@ -40,6 +40,7 @@ class MaterialEngine {
 
   auto create_or_get_buffer(UUID prop_uuid, int width, int height,
                             gl::GLenum format) -> OutputBuffer&;
+  auto get_buffer(UUID prop_uuid) -> OutputBuffer&;
 
   auto set_graph(std::shared_ptr<MaterialGraph> graph) -> void;
   auto clear_graph() -> void;
@@ -51,5 +52,6 @@ class MaterialEngine {
   auto on_link_deleted(Link link) -> void;
 
   auto get_preview_texture(MaterialNode& node) -> gl::GLuint;
+  auto shutdown() -> void;
 };
 }  // namespace afro::graph::material

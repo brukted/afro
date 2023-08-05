@@ -21,11 +21,14 @@ find_package(Fruit REQUIRED)
 
 embed_data_simple("../../resources/fa-solid-900.ttf" rc)
 embed_data_simple("../../resources/droidsans.ttf" rc)
-embed_data_text("../../resources/shaders/material/mat_vertex.vert" rc)
-embed_data_text("../../resources/shaders/material/uniform_color.frag" rc)
 embed_data_text("../../resources/shaders/material/blend.frag" rc)
+embed_data_text("../../resources/shaders/material/bloom.frag" rc)
 embed_data_text("../../resources/shaders/material/blur.frag" rc)
 embed_data_text("../../resources/shaders/material/channel_select.frag" rc)
+embed_data_text("../../resources/shaders/material/circle.frag" rc)
+embed_data_text("../../resources/shaders/material/mat_vertex.vert" rc)
+embed_data_text("../../resources/shaders/material/uniform_color.frag" rc)
+embed_data_text("../../resources/shaders/material/blur.frag" rc)
 
 #
 # Sources

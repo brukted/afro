@@ -18,8 +18,8 @@ class MaterialNode;
 class MaterialEngine;
 class MaterialGraph;
 
-using MaterialNodeExecFun = std::function<void(
-    MaterialEngine* engine, MaterialGraph*, MaterialNode* node)>;
+using MaterialNodeExecFun =
+    std::function<void(MaterialEngine*, MaterialGraph*, MaterialNode*)>;
 
 class MaterialNodeDefinition {
  private:
@@ -30,7 +30,7 @@ class MaterialNodeDefinition {
   ui::Icon icon;
   MaterialNodeExecFun on_execute;
   static MaterialNodeExecFun def_exec_fun;
-  
+
  public:
   MaterialNodeDefinition(
       std::string id, std::string name,

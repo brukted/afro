@@ -73,15 +73,18 @@ MaterialProcessor::~MaterialProcessor() {
 }
 
 auto MaterialProcessor::set_texture(std::string_view sampler_name,
-                                    gl::GLint texture_unit) const -> void {
+                                    gl::GLint texture_unit) -> void {
   auto location = glGetUniformLocation(program_id, sampler_name.data());
   AF_ASSERT_MSG(location != -1, "Uniform not found")
+  glActiveTexture(GL_TEXTURE0 + texture_target_offset);
+  glBindTexture(GL_TEXTURE_2D, texture_unit);
   glUseProgram(program_id);
-  glUniform1i(location, texture_unit);
+  glUniform1i(location, texture_target_offset);
+  texture_target_offset += 1;
 }
 
 auto MaterialProcessor::execute(gl::GLuint output_frame_buf, gl::GLuint tex_buf,
-                                int width, int height) const -> void {
+                                int width, int height) -> void {
   // TODO: Add support for multiple output frame buffers
   glUseProgram(program_id);
   glBindFramebuffer(gl::GLenum::GL_FRAMEBUFFER, output_frame_buf);
@@ -92,6 +95,7 @@ auto MaterialProcessor::execute(gl::GLuint output_frame_buf, gl::GLuint tex_buf,
   glBindTexture(GL_TEXTURE_2D, tex_buf);
   glGenerateMipmap(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, 0);
+  texture_target_offset = 0;
 }
 
 auto MaterialProcessor::set_prop(property::Property &prop) const -> void {

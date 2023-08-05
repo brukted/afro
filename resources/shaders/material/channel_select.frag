@@ -10,25 +10,26 @@ uniform int channel_green = 1;
 uniform int channel_blue = 2;
 uniform int channel_alpha = 3;
 
-float get_channel(vec4 c1,vec4 c2, int channel) {
+float get_channel(vec4 c1, vec4 c2, int channel) {
     switch (channel) {
         case 0:
-            return c1.r;
+        return c1.r;
         case 1:
-            return c1.g;
+        return c1.g;
         case 2:
-            return c1.b;
+        return c1.b;
         case 3:
-            return c1.a;
+        return c1.a;
         case 4:
-            return c2.r;
+        return c2.r;
         case 5:
-            return c2.g;
+        return c2.g;
         case 6:
-            return c2.b;
+        return c2.b;
         case 7:
-            return c2.a;
+        return c2.a;
     }
+    return 0;
 }
 
 void main() {
@@ -37,10 +38,10 @@ void main() {
 
     vec4 final = vec4(0);
 
-    final.r = get_channel(c,c2,channel_red);
-    final.g = get_channel(c,c2,channel_green);
-    final.b = get_channel(c,c2,channel_blue);
-    final.a = get_channel(c,c2,channel_alpha);
+    final.r = get_channel(c, c2, channel_red);
+    final.g = get_channel(c, c2, channel_green);
+    final.b = get_channel(c, c2, channel_blue);
+    final.a = get_channel(c, c2, channel_alpha);
 
     frag_color = final;
 }

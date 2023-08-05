@@ -3,7 +3,6 @@
 #include <memory>
 
 #include "di.h"
-#include "property/data/property_definition.h"
 #include "utils/log.h"
 
 using namespace std;
@@ -33,6 +32,8 @@ auto main() -> int {
   while (main_window->draw()) {
     undo->execute_pending();
   }
+
+  injector.get<shared_ptr<graph::material::MaterialEditor>>()->shutdown();
 
   main_window->shutdown();
   return 0;
