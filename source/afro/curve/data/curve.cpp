@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-#include "core/curve.h"
+#include "curve.h"
 
 #include <algorithm>
 #include <array>
@@ -13,10 +13,10 @@
 #include <functional>
 #include <vector>
 
-#include "utils/asset.h"
+#include "utils/assert.h"
 #include "utils/math.h"
 
-namespace afro::core::bezier {
+namespace afro::curve {
 using std::abs;
 using std::pow;
 
@@ -36,9 +36,11 @@ auto BezierSpline::lut(int samples, bool clamp) -> std::vector<float> {
   lut.reserve(samples);
   const auto step = 1.0F / (float)samples;
   sort();
-  for (auto i = 0.0F; i < 1.0F && lut.size() < samples; i += step) {
+  for (auto i = 0.0F; (i < 1.0F) && (lut.size() < static_cast<size_t>(samples));
+       i += step) {
     lut.push_back(at(i, clamp));
   }
+
   return lut;
 }
 
@@ -173,4 +175,4 @@ auto BezierSpline::validate() -> void {
   l_p.t1.x = std::clamp(l_p.t1.x, points[points.size() - 2].pos.x, l_p.pos.x);
   l_p.t2 = {1.0F, 1.0F};
 }
-}  // namespace afro::core::bezier
+}  // namespace afro::curve

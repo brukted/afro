@@ -1,0 +1,1 @@
+target_sources(afro PUBLIC color_curve_editor.h color_curve_editor.cpp)

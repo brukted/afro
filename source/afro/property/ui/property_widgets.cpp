@@ -7,6 +7,7 @@
 #include <any>
 #include <utility>
 
+#include "curve/ui/color_curve_editor.h"
 #include "property/data/enum_item.h"
 #include "ui/utils/ui_utils.h"
 
@@ -373,4 +374,16 @@ auto draw_enum_property(Property& property) -> void {
 
   ImGui::PopID();
 }
+
+auto draw_curve_property(Property& property) -> void {
+  const auto& prop_def = property.get_property_definition();
+
+  ImGui::PushID(prop_def.id.data());
+  ImGui::TextUnformatted(prop_def.name.data());
+  ui::tooltip(prop_def.description);
+  auto* value = &property.get<curve::ColorCurve>();
+  curve::draw_color_curve_editor(*value);
+  ImGui::PopID();
+}
+
 }  // namespace afro::property

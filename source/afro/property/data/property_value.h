@@ -9,6 +9,7 @@
 #include <string>
 #include <variant>
 
+#include "curve/data/curve.h"
 #include "enum_item.h"
 #include "utils/math.h"
 
@@ -30,7 +31,8 @@ enum class ValueType {
 };
 enum class ValueUnit { NONE, ROTATION, POSITION, POWER_2, COLOR, PATH };
 
-using PropertyValue = std::variant<int, IVec2, IVec3, IVec4, float, FVec2,
-                                   FVec3, FVec4, std::string, bool, EnumItem>;
+using PropertyValue =
+    std::variant<int, IVec2, IVec3, IVec4, float, FVec2, FVec3, FVec4,
+                 std::string, bool, EnumItem, curve::ColorCurve>;
 using OptPropertyValue = std::optional<PropertyValue>;
 }  // namespace afro::property

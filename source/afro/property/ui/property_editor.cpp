@@ -69,6 +69,8 @@ auto PropertyEditor::get_draw_function(Property &property)
       return draw_bool_property;
     case ValueType::ENUM:
       return draw_enum_property;
+    case ValueType::COLOR_BEZIER_CURVE:
+      return draw_curve_property;
     default:
       return [](Property &) {
         ImGui::TextUnformatted(translate("Unknown property type"));

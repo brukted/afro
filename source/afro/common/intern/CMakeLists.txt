@@ -8,7 +8,7 @@ target_sources(
         packed_file.cpp
         uuid.cpp
         folder.cpp
-        curve.cpp
+        ../../curve/data/curve.cpp
         material_nodes.cpp
         material_engine.cpp
         material_graph.cpp

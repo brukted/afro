@@ -1,0 +1,1 @@
+target_sources(afro PUBLIC curve.h curve.cpp)

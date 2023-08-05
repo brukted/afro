@@ -10,7 +10,7 @@
 
 #include "utils/math.h"
 
-namespace afro::core::bezier {
+namespace afro::curve {
 /**
  * @brief Represents a single point on the curve editor.
  *
@@ -112,4 +112,12 @@ struct BezierSpline {
                                           bool clamp = true) -> FVec2;
 };
 
-}  // namespace afro::core::bezier
+struct ColorCurve {
+  BezierSpline lum;
+  BezierSpline r;
+  BezierSpline g;
+  BezierSpline b;
+  BezierSpline a;
+};
+
+}  // namespace afro::curve

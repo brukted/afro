@@ -13,5 +13,6 @@ auto draw_float4_property(Property& property) -> void;
 auto draw_bool_property(Property& property) -> void;
 auto draw_string_property(Property& property) -> void;
 auto draw_enum_property(Property& property) -> void;
+auto draw_curve_property(Property& property) -> void;
 
 }  // namespace afro::property
