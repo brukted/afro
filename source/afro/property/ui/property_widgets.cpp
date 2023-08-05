@@ -21,12 +21,13 @@ auto draw_integer_property(Property& property) -> void {
 
   static const PropertyValue default_step{1.0F};
   static const PropertyValue zero_value{0};
+  static const PropertyValue max_value{std::numeric_limits<int>::max()};
 
   if (ImGui::DragInt(
           "###drag_int", value,
           std::get<float>(prop_def.step_value.value_or(default_step)),
           std::get<int>(prop_def.min_value.value_or(zero_value)),
-          std::get<int>(prop_def.max_value.value_or(zero_value)), nullptr,
+          std::get<int>(prop_def.max_value.value_or(max_value)), nullptr,
           ImGuiSliderFlags_AlwaysClamp)) {
     // TODO: Add undo/redo
     property = *value;
@@ -44,6 +45,7 @@ auto draw_integer2_property(Property& property) -> void {
 
   static const PropertyValue default_step{1.0F};
   static const PropertyValue zero_value{0};
+  static const PropertyValue max_value{std::numeric_limits<int>::max()};
 
   switch (prop_def.value_unit) {
     case ValueUnit::NONE: {
@@ -51,7 +53,7 @@ auto draw_integer2_property(Property& property) -> void {
               "###drag_int2", reinterpret_cast<int*>(value),
               std::get<float>(prop_def.step_value.value_or(default_step)),
               std::get<int>(prop_def.min_value.value_or(zero_value)),
-              std::get<int>(prop_def.max_value.value_or(zero_value)), nullptr,
+              std::get<int>(prop_def.max_value.value_or(max_value)), nullptr,
               ImGuiSliderFlags_AlwaysClamp)) {
         // TODO: Add undo/redo
         property = *value;
@@ -64,13 +66,13 @@ auto draw_integer2_property(Property& property) -> void {
                          std::get<float>(prop_def.step_value.value_or(
                              default_step)),  // TODO: Add undo/redo
                          std::get<int>(prop_def.min_value.value_or(zero_value)),
-                         std::get<int>(prop_def.max_value.value_or(zero_value)),
+                         std::get<int>(prop_def.max_value.value_or(max_value)),
                          nullptr, ImGuiSliderFlags_AlwaysClamp) ||
           ImGui::DragInt("###y", &value->y,
                          std::get<float>(prop_def.step_value.value_or(
                              default_step)),  // TODO: Add undo/redo
                          std::get<int>(prop_def.min_value.value_or(zero_value)),
-                         std::get<int>(prop_def.max_value.value_or(zero_value)),
+                         std::get<int>(prop_def.max_value.value_or(max_value)),
                          nullptr, ImGuiSliderFlags_AlwaysClamp)) {
         // TODO: Add undo/redo
         property = *value;
@@ -102,6 +104,7 @@ auto draw_integer3_property(Property& property) -> void {
 
   static const PropertyValue default_step{1.0F};
   static const PropertyValue zero_value{0};
+  static const PropertyValue max_value{std::numeric_limits<int>::max()};
 
   switch (prop_def.value_unit) {
     case ValueUnit::NONE: {
@@ -109,7 +112,7 @@ auto draw_integer3_property(Property& property) -> void {
               "###drag_int3", reinterpret_cast<int*>(value),
               std::get<float>(prop_def.step_value.value_or(default_step)),
               std::get<int>(prop_def.min_value.value_or(zero_value)),
-              std::get<int>(prop_def.max_value.value_or(zero_value)), nullptr,
+              std::get<int>(prop_def.max_value.value_or(max_value)), nullptr,
               ImGuiSliderFlags_AlwaysClamp)) {
         // TODO: Add undo/redo
         property = *value;
@@ -133,6 +136,7 @@ auto draw_integer4_property(Property& property) -> void {
 
   static const PropertyValue default_step{1.0F};
   static const PropertyValue zero_value{0};
+  static const PropertyValue max_value{std::numeric_limits<int>::max()};
 
   switch (prop_def.value_unit) {
     case ValueUnit::NONE: {
@@ -140,7 +144,7 @@ auto draw_integer4_property(Property& property) -> void {
               "###drag_int4", reinterpret_cast<int*>(value),
               std::get<float>(prop_def.step_value.value_or(default_step)),
               std::get<int>(prop_def.min_value.value_or(zero_value)),
-              std::get<int>(prop_def.max_value.value_or(zero_value)), nullptr,
+              std::get<int>(prop_def.max_value.value_or(max_value)), nullptr,
               ImGuiSliderFlags_AlwaysClamp)) {
         // TODO: Add undo/redo
         property = *value;
@@ -164,12 +168,13 @@ auto draw_float_property(Property& property) -> void {
 
   static const PropertyValue default_step{0.01F};
   static const PropertyValue zero_value{0.0F};
+  static const PropertyValue max_value{std::numeric_limits<float>::max()};
 
   if (ImGui::DragFloat(
           "###drag_float", value,
           std::get<float>(prop_def.step_value.value_or(default_step)),
           std::get<float>(prop_def.min_value.value_or(zero_value)),
-          std::get<float>(prop_def.max_value.value_or(zero_value)), nullptr,
+          std::get<float>(prop_def.max_value.value_or(max_value)), nullptr,
           ImGuiSliderFlags_AlwaysClamp)) {
     // TODO: Add undo/redo
     property = *value;
@@ -187,6 +192,7 @@ auto draw_float2_property(Property& property) -> void {
 
   static const PropertyValue default_step{0.01F};
   static const PropertyValue zero_value{0.0F};
+  static const PropertyValue max_value{std::numeric_limits<float>::max()};
 
   switch (prop_def.value_unit) {
     case ValueUnit::NONE: {
@@ -194,7 +200,7 @@ auto draw_float2_property(Property& property) -> void {
               "###drag_float2", reinterpret_cast<float*>(value),
               std::get<float>(prop_def.step_value.value_or(default_step)),
               std::get<float>(prop_def.min_value.value_or(zero_value)),
-              std::get<float>(prop_def.max_value.value_or(zero_value)), "%f",
+              std::get<float>(prop_def.max_value.value_or(max_value)), "%f",
               ImGuiSliderFlags_AlwaysClamp)) {
         // TODO: Add undo/redo
         property = *value;
@@ -218,6 +224,7 @@ auto draw_float3_property(Property& property) -> void {
 
   static const PropertyValue default_step{0.01F};
   static const PropertyValue zero_value{0.0F};
+  static const PropertyValue max_value{std::numeric_limits<float>::max()};
 
   switch (prop_def.value_unit) {
     case ValueUnit::NONE: {
@@ -225,7 +232,7 @@ auto draw_float3_property(Property& property) -> void {
               "###drag_float3", reinterpret_cast<float*>(value),
               std::get<float>(prop_def.step_value.value_or(default_step)),
               std::get<float>(prop_def.min_value.value_or(zero_value)),
-              std::get<float>(prop_def.max_value.value_or(zero_value)), nullptr,
+              std::get<float>(prop_def.max_value.value_or(max_value)), nullptr,
               ImGuiSliderFlags_AlwaysClamp)) {
         // TODO: Add undo/redo
         property = *value;
@@ -257,6 +264,7 @@ auto draw_float4_property(Property& property) -> void {
 
   static const PropertyValue default_step{0.01F};
   static const PropertyValue zero_value{0.0F};
+  static const PropertyValue max_value{std::numeric_limits<float>::max()};
 
   switch (prop_def.value_unit) {
     case ValueUnit::NONE: {
@@ -264,7 +272,7 @@ auto draw_float4_property(Property& property) -> void {
               "###drag_float4", reinterpret_cast<float*>(value),
               std::get<float>(prop_def.step_value.value_or(default_step)),
               std::get<float>(prop_def.min_value.value_or(zero_value)),
-              std::get<float>(prop_def.max_value.value_or(zero_value)), nullptr,
+              std::get<float>(prop_def.max_value.value_or(max_value)), nullptr,
               ImGuiSliderFlags_AlwaysClamp)) {
         // TODO: Add undo/redo
         property = *value;
